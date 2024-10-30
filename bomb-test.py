@@ -8,6 +8,9 @@ from adafruit_ht16k33.segments import Seg7x4
 from digitalio import DigitalInOut, Direction, Pull
 from adafruit_matrixkeypad import Matrix_Keypad
 
+#Hello
+
+
 # constants
 # the bomb's initial countdown timer value (seconds)
 COUNTDOWN = 300
