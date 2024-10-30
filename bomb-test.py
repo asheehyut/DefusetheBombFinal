@@ -8,9 +8,6 @@ from adafruit_ht16k33.segments import Seg7x4
 from digitalio import DigitalInOut, Direction, Pull
 from adafruit_matrixkeypad import Matrix_Keypad
 
-#Hello
-
-
 # constants
 # the bomb's initial countdown timer value (seconds)
 COUNTDOWN = 300
@@ -19,17 +16,42 @@ MAX_PASS_LEN = 11
 # does the asterisk (*) clear the passphrase?
 STAR_CLEARS_PASS = True
 
+
 # the LCD display "GUI"
 class Lcd(Frame):
     def __init__(self, window):
         super().__init__(window, bg="black")
-        # make the GUI fullscreen
-        window.after(500, window.attributes, '-fullscreen', 'True')
-        # a copy of the timer on the 7-segment display
-        self._timer = None
-        # the pushbutton's state
-        self._button = None
-        # setup the GUI
+        self.window = window
+        # Start with welcome screen state
+        self.show_welcome()
+
+    def show_welcome(self):
+        # Clear any existing widgets
+        for widget in self.winfo_children():
+            widget.destroy()
+            
+        # Welcome screen elements
+        welcome_label = Label(self, text="Welcome to the Bomb Defusal System", 
+                            font=("Courier New", 24), bg="black", fg="white")
+        welcome_label.pack(pady=20)
+
+        get_started_button = Button(self, text="Click to Get Started", 
+                                  font=("Courier New", 18), 
+                                  command=self.show_main_interface,
+                                  bg="red", fg="white")
+        get_started_button.pack(pady=20)
+        
+        self.pack(fill=BOTH, expand=True)
+
+    def show_main_interface(self):
+        # Clear welcome screen
+        for widget in self.winfo_children():
+            widget.destroy()
+            
+        # Make fullscreen after welcome
+        self.window.after(500, self.window.attributes, '-fullscreen', 'True')
+        
+        # Setup main interface
         self.setup()
 
     # sets up the LCD "GUI"
@@ -362,6 +384,8 @@ def quit():
 
 # start checking the threads
 check()
+
+
 # display the LCD GUI
 window.mainloop()
 
