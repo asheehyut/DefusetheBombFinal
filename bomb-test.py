@@ -1,4 +1,5 @@
 from tkinter import *
+from tkinter import ttk
 import tkinter
 from threading import Thread
 from time import sleep
@@ -14,7 +15,7 @@ COUNTDOWN = 300
 # the maximum passphrase length
 MAX_PASS_LEN = 11
 # does the asterisk (*) clear the passphrase?
-STAR_CLEARS_PASS = True 
+STAR_CLEARS_PASS = True
 
 
 # the LCD display "GUI"
@@ -24,50 +25,54 @@ class Lcd(Frame):
         self.window = window
         # Start with welcome screen state
 #         self.show_welcome()
-        
+        self._ltimer = None
+        self._lkeypad = None
+        self._lwires = None
+        self._lbutton = None
+        self._ltoggles = None
+        self._lpause = None
+        self._lquit = None
         # Clear any existing widgets
         for widget in self.winfo_children():
             widget.destroy()
-            
+           
         # Welcome screen elements
-        welcome_label = Label(window, text="Welcome to the Bomb Defusal System", 
+        welcome_label = Label(window, text="Welcome to the Bomb Defusal System",
                             font=("Courier New", 24), bg="black", fg="white")
         welcome_label.pack(pady=20)
 
-        get_started_button = Button(window, text="Click to Get Started", 
-                                  font=("Courier New", 18), 
-                                  command=self.show_main_interface,
-                                  bg="red", fg="white")
+        get_started_button = ttk.Button(window, text="Click to Get Started",
+                                  command=self.show_main_interface)
         get_started_button.pack(pady=20)
-        
+       
         self.pack(fill=BOTH, expand=True)
 
     def show_welcome(self):
         # Clear any existing widgets
         for widget in self.winfo_children():
             widget.destroy()
-            
+           
         # Welcome screen elements
-        welcome_label = Label(self, text="Welcome to the Bomb Defusal System", 
+        welcome_label = Label(self, text="Welcome to the Bomb Defusal System",
                             font=("Courier New", 24), bg="black", fg="white")
         welcome_label.pack(pady=20)
 
-        get_started_button = Button(self, text="Click to Get Started", 
-                                  font=("Courier New", 18), 
+        get_started_button = Button(self, text="Click to Get Started",
+                                  font=("Courier New", 18),
                                   command=self.show_main_interface,
                                   bg="red", fg="white")
         get_started_button.pack(pady=20)
-        
+       
         self.pack(fill=BOTH, expand=True)
 
     def show_main_interface(self):
         # Clear welcome screen
         for widget in self.winfo_children():
             widget.destroy()
-            
+           
         # Make fullscreen after welcome
         self.window.after(500, self.window.attributes, '-fullscreen', 'True')
-        
+       
         # Setup main interface
         self.setup()
 
@@ -98,6 +103,9 @@ class Lcd(Frame):
         # the quit button
         self._lquit = tkinter.Button(self, bg="red", fg="white", font=("Courier New", 24), text="Quit", command=self.quit)
         self._lquit.grid(row=5, column=1, sticky=W, padx=25, pady=40)
+
+        # start checking the threads
+        check()
 
     # binds the 7-segment display component to the GUI
     def setTimer(self, timer):
@@ -399,8 +407,7 @@ def quit():
     window.destroy()
     exit(0)
 
-# start checking the threads
-check()
+
 
 
 # display the LCD GUI
