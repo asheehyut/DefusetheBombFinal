@@ -30,11 +30,11 @@ class Lcd(Frame):
             widget.destroy()
             
         # Welcome screen elements
-        welcome_label = Label(self, text="Welcome to the Bomb Defusal System", 
+        welcome_label = Label(window, text="Welcome to the Bomb Defusal System", 
                             font=("Courier New", 24), bg="black", fg="white")
         welcome_label.pack(pady=20)
 
-        get_started_button = Button(self, text="Click to Get Started", 
+        get_started_button = Button(window, text="Click to Get Started", 
                                   font=("Courier New", 18), 
                                   command=self.show_main_interface,
                                   bg="red", fg="white")
