@@ -14,7 +14,7 @@ COUNTDOWN = 300
 # the maximum passphrase length
 MAX_PASS_LEN = 11
 # does the asterisk (*) clear the passphrase?
-STAR_CLEARS_PASS = True
+STAR_CLEARS_PASS = True 
 
 
 # the LCD display "GUI"
@@ -23,7 +23,24 @@ class Lcd(Frame):
         super().__init__(window, bg="black")
         self.window = window
         # Start with welcome screen state
-        self.show_welcome()
+#         self.show_welcome()
+        
+        # Clear any existing widgets
+        for widget in self.winfo_children():
+            widget.destroy()
+            
+        # Welcome screen elements
+        welcome_label = Label(self, text="Welcome to the Bomb Defusal System", 
+                            font=("Courier New", 24), bg="black", fg="white")
+        welcome_label.pack(pady=20)
+
+        get_started_button = Button(self, text="Click to Get Started", 
+                                  font=("Courier New", 18), 
+                                  command=self.show_main_interface,
+                                  bg="red", fg="white")
+        get_started_button.pack(pady=20)
+        
+        self.pack(fill=BOTH, expand=True)
 
     def show_welcome(self):
         # Clear any existing widgets
