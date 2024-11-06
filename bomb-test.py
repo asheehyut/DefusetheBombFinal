@@ -23,8 +23,6 @@ class Lcd(Frame):
     def __init__(self, window):
         super().__init__(window, bg="black")
         self.window = window
-        # Start with welcome screen state
-#         self.show_welcome()
         self._ltimer = None
         self._lkeypad = None
         self._lwires = None
@@ -32,48 +30,63 @@ class Lcd(Frame):
         self._ltoggles = None
         self._lpause = None
         self._lquit = None
-        # Clear any existing widgets
-        for widget in self.winfo_children():
-            widget.destroy()
-           
-        # Welcome screen elements
-        welcome_label = Label(window, text="Welcome to the Bomb Defusal System",
-                            font=("Courier New", 24), bg="black", fg="white")
-        welcome_label.pack(pady=20)
-
-        get_started_button = ttk.Button(window, text="Click to Get Started",
-                                  command=self.show_main_interface)
-        get_started_button.pack(pady=20)
-       
         self.pack(fill=BOTH, expand=True)
+        self.show_welcome()
 
     def show_welcome(self):
-        # Clear any existing widgets
         for widget in self.winfo_children():
             widget.destroy()
-           
-        # Welcome screen elements
         welcome_label = Label(self, text="Welcome to the Bomb Defusal System",
-                            font=("Courier New", 24), bg="black", fg="white")
+                              font=("Courier New", 24), bg="black", fg="white")
         welcome_label.pack(pady=20)
-
         get_started_button = Button(self, text="Click to Get Started",
-                                  font=("Courier New", 18),
-                                  command=self.show_main_interface,
-                                  bg="red", fg="white")
+                                    font=("Courier New", 18),
+                                    command=self.show_difficulty_selection,
+                                    bg="red", fg="white")
         get_started_button.pack(pady=20)
-       
-        self.pack(fill=BOTH, expand=True)
+    
+    def show_difficulty_selection(self):
+        for widget in self.winfo_children():
+            widget.destroy()
+        
+        # Difficulty selection elements
+        difficulty_label = Label(self, text="Select Difficulty Level",
+                                 font=("Courier New", 24), bg="black", fg="white")
+        difficulty_label.pack(pady=20)
+
+        # Buttons for each difficulty level
+        easy_button = Button(self, text="Easy", font=("Courier New", 18),
+                             command=lambda: self.start_main_interface("Easy"),
+                             bg="green", fg="white")
+        easy_button.pack(pady=10)
+
+        medium_button = Button(self, text="Medium", font=("Courier New", 18),
+                               command=lambda: self.start_main_interface("Medium"),
+                               bg="orange", fg="white")
+        medium_button.pack(pady=10)
+
+        hard_button = Button(self, text="Hard", font=("Courier New", 18),
+                             command=lambda: self.start_main_interface("Hard"),
+                             bg="red", fg="white")
+        hard_button.pack(pady=10)
+
+    def start_main_interface(self, difficulty):
+        # Here you can adjust settings based on the selected difficulty
+        # For example, adjust the countdown time
+        global COUNTDOWN
+        if difficulty == "Easy":
+            COUNTDOWN = 300
+        elif difficulty == "Medium":
+            COUNTDOWN = 180
+        elif difficulty == "Hard":
+            COUNTDOWN = 120
+
+        self.show_main_interface()
 
     def show_main_interface(self):
-        # Clear welcome screen
         for widget in self.winfo_children():
             widget.destroy()
-           
-        # Make fullscreen after welcome
         self.window.after(500, self.window.attributes, '-fullscreen', 'True')
-       
-        # Setup main interface
         self.setup()
 
     # sets up the LCD "GUI"
