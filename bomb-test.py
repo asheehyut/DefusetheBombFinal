@@ -1,3 +1,4 @@
+import random
 from tkinter import *
 
 import tkinter
@@ -330,6 +331,8 @@ class Toggles(PhaseThread):
         self._value = ""
         # the toggle switch pins
         self._pins = pins
+        # Generates a random code
+        self._code = format(random.randrange(1,15), "04b")
 
     # runs the thread
     def run(self):
@@ -338,7 +341,9 @@ class Toggles(PhaseThread):
             # get the toggle switch values (0->False, 1->True)
             self._value = "".join([str(int(pin.value)) for pin in self._pins])
             sleep(0.1)
-        self._running = False
+            # Checks if the toggles are correctly flipped
+            if self._value == "1101":
+                self._running = False
 
     def __str__(self):
         return f"{self._value}/{int(self._value, 2)}"
