@@ -90,19 +90,67 @@ class Lcd(Frame):
 
         # Buttons for each difficulty level
         easy_button = Button(self, text="Easy", font=("Courier New", 18),
-                             command=lambda: self.start_main_interface("Easy"),
+                             command=lambda: self.show_danger_screen("Easy"),
                              bg="green", fg="white")
         easy_button.pack(pady=10)
 
         medium_button = Button(self, text="Medium", font=("Courier New", 18),
-                               command=lambda: self.start_main_interface("Medium"),
+                               command=lambda: self.show_danger_screen("Medium"),
                                bg="orange", fg="white")
         medium_button.pack(pady=10)
 
         hard_button = Button(self, text="Hard", font=("Courier New", 18),
-                             command=lambda: self.start_main_interface("Hard"),
+                             command=lambda: self.show_danger_screen("Hard"),
                              bg="red", fg="white")
         hard_button.pack(pady=10)
+    
+    def show_danger_screen(self, difficulty):
+        # Transition to the Danger screen
+        for widget in self.winfo_children():
+            widget.destroy()
+
+        # Set the background color to black
+        self.config(bg="black")
+
+        # Add the "Danger" title
+        danger_label = Label(self, text="DANGER", font=("Courier New", 48),
+                             bg="black", fg="red")
+        danger_label.pack(pady=20)
+
+        # Create the three sections with white separators
+        top_section = Frame(self, bg="black")
+        top_section.pack(fill=X, padx=20)
+
+        middle_section = Frame(self, bg="black")
+        middle_section.pack(fill=X, padx=20)
+
+        bottom_section = Frame(self, bg="black")
+        bottom_section.pack(fill=X, padx=20)
+
+        # Top leading section with four circles representing switch states
+        circle_frame = Frame(top_section, bg="black")
+        circle_frame.pack(side=LEFT, padx=10)
+        
+        # Circle states: gray (off), green (on)
+        self.circle_labels = []
+        for _ in range(4):
+            circle_label = Label(circle_frame, width=4, height=2, bg="gray", relief="solid")
+            circle_label.pack(side=LEFT, padx=5)
+            self.circle_labels.append(circle_label)
+
+        # Placeholder for the other sections (trailing and bottom sections for now)
+        Label(middle_section, text="", font=("Courier New", 18), bg="black", fg="white").pack(pady=5)
+        Label(bottom_section, text="", font=("Courier New", 18), bg="black", fg="white").pack(pady=5)
+
+        # You can adjust difficulty settings here based on the selected difficulty (e.g., countdown)
+        global COUNTDOWN
+        if difficulty == "Easy":
+            COUNTDOWN = 300
+        elif difficulty == "Medium":
+            COUNTDOWN = 180
+        elif difficulty == "Hard":
+            COUNTDOWN = 120
+
 
     def start_main_interface(self, difficulty):
         # Here you can adjust settings based on the selected difficulty
