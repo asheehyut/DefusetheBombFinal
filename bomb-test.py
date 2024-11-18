@@ -1,5 +1,5 @@
 from tkinter import *
-from tkinter import ttk
+
 import tkinter
 from threading import Thread
 from time import sleep
@@ -17,6 +17,33 @@ MAX_PASS_LEN = 11
 # does the asterisk (*) clear the passphrase?
 STAR_CLEARS_PASS = True
 
+def check_class():
+    # check the countdown
+    if (timer._running):
+        # update the GUI
+        gui._ltimer.config(text=f"Time left: {timer}")
+    else:
+        # if the countdown has expired, quit
+        quit()
+    # check the keypad
+    if (keypad._running):
+        # update the GUI
+        gui._lkeypad.config(text=f"Combination: {keypad}")
+    # check the wires
+    if (wires._running):
+        # update the GUI
+        gui._lwires.config(text=f"Wires: {wires}")
+    # check the button
+    if (button._running):
+        # update the GUI
+        gui._lbutton.config(text=f"Button: {button}")
+    # check the toggles
+    if (toggles._running):
+        # update the GUI
+        gui._ltoggles.config(text=f"Toggles: {toggles}")
+
+    # check again after 100ms
+    gui.after(100, check)
 
 # the LCD display "GUI"
 class Lcd(Frame):
@@ -31,9 +58,12 @@ class Lcd(Frame):
         self._lpause = None
         self._lquit = None
         self.pack(fill=BOTH, expand=True)
+        
         self.show_welcome()
 
+
     def show_welcome(self):
+        self.window.after(500, self.window.attributes, '-fullscreen', 'True')
         for widget in self.winfo_children():
             widget.destroy()
         welcome_label = Label(self, text="Welcome to the Bomb Defusal System",
@@ -47,7 +77,10 @@ class Lcd(Frame):
     
     def show_difficulty_selection(self):
         for widget in self.winfo_children():
+            print("wererrefr")
             widget.destroy()
+        
+        
         
         # Difficulty selection elements
         difficulty_label = Label(self, text="Select Difficulty Level",
@@ -118,7 +151,7 @@ class Lcd(Frame):
         self._lquit.grid(row=5, column=1, sticky=W, padx=25, pady=40)
 
         # start checking the threads
-        check()
+        check_class()
 
     # binds the 7-segment display component to the GUI
     def setTimer(self, timer):
@@ -254,7 +287,7 @@ class Wires(PhaseThread):
         return f"{self._value}/{int(self._value, 2)}"
 
 # the pushbutton phase
-class Button(PhaseThread):
+class ActionButton(PhaseThread):
     colors = [ "R", "G", "B" ]  # the button's possible colors
 
     def __init__(self, state, rgb, name="Button"):
@@ -273,16 +306,16 @@ class Button(PhaseThread):
         rgb_counter = 0
         while (True):
             # set the LED to the current color
-            self._rgb[0].value = False if Button.colors[rgb_index] == "R" else True
-            self._rgb[1].value = False if Button.colors[rgb_index] == "G" else True
-            self._rgb[2].value = False if Button.colors[rgb_index] == "B" else True
+            self._rgb[0].value = False if ActionButton.colors[rgb_index] == "R" else True
+            self._rgb[1].value = False if ActionButton.colors[rgb_index] == "G" else True
+            self._rgb[2].value = False if ActionButton.colors[rgb_index] == "B" else True
             # get the pushbutton's state
             self._value = self._state.value
             # increment the RGB counter
             rgb_counter += 1
             # switch to the next RGB color every 1s (10 * 0.1s = 1s)
             if (rgb_counter == 10):
-                rgb_index = (rgb_index + 1) % len(Button.colors)
+                rgb_index = (rgb_index + 1) % len(ActionButton.colors)
                 rgb_counter = 0
             sleep(0.1)
         self._running = False
@@ -359,7 +392,7 @@ button_input.pull = Pull.DOWN
 for pin in button_RGB:
     pin.direction = Direction.OUTPUT
     pin.value = True
-button = Button(button_input, button_RGB)
+button = ActionButton(button_input, button_RGB)
 # bind the pushbutton to the LCD GUI
 gui.setButton(button)
 
