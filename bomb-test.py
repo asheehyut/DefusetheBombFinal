@@ -171,6 +171,16 @@ class Lcd(Frame):
         self.window.after(500, self.window.attributes, '-fullscreen', 'True')
         self.setup()
 
+    def serial_number(self):
+        serial_format = "xx00xxx0"
+        serial_number = ""
+
+        for i in serial_format:
+            if i == "x":
+                serial_number += chr(random.randint(97, 122))
+            elif i == "0":
+                serial_number += str(random.randint(1, 9))
+
     # sets up the LCD "GUI"
     def setup(self):
         # set column weights
@@ -197,7 +207,7 @@ class Lcd(Frame):
         self._lpause.grid(row=5, column=0, sticky=W, padx=25, pady=40)
         # the quit button
         self._lquit = tkinter.Button(self, bg="red", fg="white", font=("Courier New", 24), text="Quit", command=self.quit)
-        self._lquit.grid(row=5, column=1, sticky=W, padx=25, pady=40)
+        self._lquit.grid(row=6, column=1, sticky=W, padx=25, pady=40)
 
         # start checking the threads
         check_class()
@@ -288,6 +298,24 @@ class Keypad(PhaseThread):
         self._value = ""
         # the keypad pins
         self._keypad = keypad
+        self._encrypted = []
+        self._decrypted = [
+                "horizon",
+                "velvet",
+                "lantern",
+                "orbit",
+                "whisper",
+                "glacier",
+                "compass",
+                "meadow",
+                "ember",
+                "quartz",
+                "harbor",
+                "summit",
+                "echo",
+                "ripple",
+                "mosaic"
+                ]
 
     # runs the thread
     def run(self):
@@ -310,7 +338,8 @@ class Keypad(PhaseThread):
                     # log the key
                     self._value += str(key)
             sleep(0.1)
-        self._running = False
+            if self._value == self._decrypted[0]:
+                self._running = False
 
     def __str__(self):
         return self._value
@@ -330,7 +359,9 @@ class Wires(PhaseThread):
             # get the jumper wire states (0->False, 1->True)
             self._value = "".join([str(int(pin.value)) for pin in self._pins])
             sleep(0.1)
-        self._running = False
+            # checks if the correct wires are unplugged
+            if self._value[0] == "0" and self._value[2] == "0":
+                self._running = False
 
     def __str__(self):
         return f"{self._value}/{int(self._value, 2)}"
@@ -505,9 +536,6 @@ def quit():
     # destroy the GUI and exit the program
     window.destroy()
     exit(0)
-
-
-
 
 # display the LCD GUI
 window.mainloop()
