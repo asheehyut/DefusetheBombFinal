@@ -340,6 +340,8 @@ class Keypad(PhaseThread):
             sleep(0.1)
             if self._value == self._decrypted[0]:
                 self._running = False
+                
+                print("Keyboard Defused")
 
     def __str__(self):
         return self._value
@@ -362,6 +364,7 @@ class Wires(PhaseThread):
             # checks if the correct wires are unplugged
             if self._value[0] == "0" and self._value[2] == "0":
                 self._running = False
+                print("Wires Defused")
 
     def __str__(self):
         return f"{self._value}/{int(self._value, 2)}"
@@ -423,6 +426,8 @@ class Toggles(PhaseThread):
             # Checks if the toggles are correctly flipped
             if self._value == "1101":
                 self._running = False
+                
+                print("Toggles Defused")
 
     def __str__(self):
         return f"{self._value}/{int(self._value, 2)}"
