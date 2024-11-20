@@ -18,33 +18,40 @@ MAX_PASS_LEN = 11
 # does the asterisk (*) clear the passphrase?
 STAR_CLEARS_PASS = True
 
+TOGGLES_GUI_UPDATED = False
+
 def check_class():
-    # check the countdown
-    if (timer._running):
-        # update the GUI
-        gui._ltimer.config(text=f"Time left: {timer}")
-    else:
-        # if the countdown has expired, quit
-        quit()
-    # check the keypad
-    if (keypad._running):
-        # update the GUI
-        gui._lkeypad.config(text=f"Combination: {keypad}")
-    # check the wires
-    if (wires._running):
-        # update the GUI
-        gui._lwires.config(text=f"Wires: {wires}")
-    # check the button
-    if (button._running):
-        # update the GUI
-        gui._lbutton.config(text=f"Button: {button}")
+    print("Toggles status - Check class", toggles._running)
+#     # check the countdown
+#     if (timer._running):
+#         # update the GUI
+#         gui._ltimer.config(text=f"Time left: {timer}")
+#     else:
+#         # if the countdown has expired, quit
+#         quit()
+#     # check the keypad
+#     if (keypad._running):
+#         # update the GUI
+#         gui._lkeypad.config(text=f"Combination: {keypad}")
+#     # check the wires
+#     if (wires._running):
+#         # update the GUI
+#         gui._lwires.config(text=f"Wires: {wires}")
+#     # check the button
+#     if (button._running):
+#         # update the GUI
+#         gui._lbutton.config(text=f"Button: {button}")
     # check the toggles
-    if (toggles._running):
+    
+    if not toggles._running:
         # update the GUI
-        gui._ltoggles.config(text=f"Toggles: {toggles}")
+#        gui._ltoggles.config(text=f"Toggles: {toggles}")
+#    else:
+        gui.show_danger_screen("Medium", "green")
+        print("Update Toggles GUI")
 
     # check again after 100ms
-    gui.after(100, check)
+    gui.after(100, check_class)
 
 # the LCD display "GUI"
 class Lcd(Frame):
@@ -78,7 +85,6 @@ class Lcd(Frame):
     
     def show_difficulty_selection(self):
         for widget in self.winfo_children():
-            print("wererrefr")
             widget.destroy()
         
         
@@ -104,7 +110,7 @@ class Lcd(Frame):
                              bg="red", fg="white")
         hard_button.pack(pady=10)
     
-    def show_danger_screen(self, difficulty):
+    def show_danger_screen(self, difficulty, togglesColor = "gray"):
         # Transition to the Danger screen
         for widget in self.winfo_children():
             widget.destroy()
@@ -134,7 +140,7 @@ class Lcd(Frame):
         # Circle states: gray (off), green (on)
         self.circle_labels = []
         for _ in range(4):
-            circle_label = Label(circle_frame, width=4, height=2, bg="gray", relief="solid")
+            circle_label = Label(circle_frame, width=4, height=2, bg=togglesColor, relief="solid")
             circle_label.pack(side=LEFT, padx=5)
             self.circle_labels.append(circle_label)
 
@@ -208,9 +214,6 @@ class Lcd(Frame):
         # the quit button
         self._lquit = tkinter.Button(self, bg="red", fg="white", font=("Courier New", 24), text="Quit", command=self.quit)
         self._lquit.grid(row=6, column=1, sticky=W, padx=25, pady=40)
-
-        # start checking the threads
-        check_class()
 
     # binds the 7-segment display component to the GUI
     def setTimer(self, timer):
@@ -341,7 +344,7 @@ class Keypad(PhaseThread):
             if self._value == self._decrypted[0]:
                 self._running = False
                 
-                print("Keyboard Defused")
+#                 print("Keyboard Defused")
 
     def __str__(self):
         return self._value
@@ -364,7 +367,7 @@ class Wires(PhaseThread):
             # checks if the correct wires are unplugged
             if self._value[0] == "0" and self._value[2] == "0":
                 self._running = False
-                print("Wires Defused")
+#                 print("Wires Defused")
 
     def __str__(self):
         return f"{self._value}/{int(self._value, 2)}"
@@ -424,10 +427,9 @@ class Toggles(PhaseThread):
             self._value = "".join([str(int(pin.value)) for pin in self._pins])
             sleep(0.1)
             # Checks if the toggles are correctly flipped
-            if self._value == "1101":
-                self._running = False
+            self._running = not (self._value == "1101")
                 
-                print("Toggles Defused")
+#                 print("Toggles Defused", self._running)
 
     def __str__(self):
         return f"{self._value}/{int(self._value, 2)}"
@@ -522,11 +524,11 @@ def check():
     if (button._running):
         # update the GUI
         gui._lbutton.config(text=f"Button: {button}")
+        
     # check the toggles
     if (toggles._running):
-        # update the GUI
-        gui._ltoggles.config(text=f"Toggles: {toggles}")
-
+        print("")
+        
     # check again after 100ms
     gui.after(100, check)
 
@@ -542,7 +544,14 @@ def quit():
     window.destroy()
     exit(0)
 
+
+
+# start checking the threads
+check_class()
+
+
 # display the LCD GUI
 window.mainloop()
+
 
 print("The bomb has been turned off.")
