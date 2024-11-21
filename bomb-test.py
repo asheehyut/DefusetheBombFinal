@@ -59,6 +59,7 @@ class Lcd(Frame):
         super().__init__(window, bg="black")
         self.window = window
         self._ltimer = None
+        self._lserial = self.serial_number()
         self._lkeypad = None
         self._lwires = None
         self._lbutton = None
@@ -186,6 +187,7 @@ class Lcd(Frame):
                 serial_number += chr(random.randint(97, 122))
             elif i == "0":
                 serial_number += str(random.randint(1, 9))
+        return serial_number
 
     # sets up the LCD "GUI"
     def setup(self):
@@ -319,6 +321,43 @@ class Keypad(PhaseThread):
                 "ripple",
                 "mosaic"
                 ]
+        # encrypts words
+        for i in range(0, len(self._decrypted)):
+            word = ""
+            for j in self._decrypted[i]:
+                shift = int(gui._serial_number[7])
+                ascii_code = (ord(j) - 97 + shift) % 26 + 97
+                word += chr(ascii_code)
+                self._encrypted.append(word)
+        # keypad dictionary
+        self._key_dictionary = {
+            "2" : "a",
+            "22" : "b",
+            "222": "c",
+            "3" : "d",
+            "33" : "e",
+            "333": "f",
+            "4" : "g",
+            "44" : "h",
+            "444": "i",
+            "5" : "j",
+            "55" : "k",
+            "555": "l",
+            "6" : "m",
+            "66" : "n",
+            "666": "o",
+            "7" : "p",
+            "77" : "q",
+            "777": "r",
+            "7777": "s",
+            "8" : "t",
+            "88" : "u",
+            "888": "v",
+            "9" : "w",
+            "99" : "x",
+            "999": "y",
+            "9999": "z"
+        }
 
     # runs the thread
     def run(self):
