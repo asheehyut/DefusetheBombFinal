@@ -21,7 +21,7 @@ STAR_CLEARS_PASS = True
 TOGGLES_GUI_UPDATED = False
 
 def check_class():
-    print("Toggles status - Check class", toggles._running)
+    togglesUpdated = False
 #     # check the countdown
 #     if (timer._running):
 #         # update the GUI
@@ -42,14 +42,49 @@ def check_class():
 #         # update the GUI
 #         gui._lbutton.config(text=f"Button: {button}")
     # check the toggles
-    
+   
+   
+    # Update other UI elements
     if not toggles._running:
-        # update the GUI
-#        gui._ltoggles.config(text=f"Toggles: {toggles}")
-#    else:
-        gui.show_danger_screen("Medium", "green")
-        print("Update Toggles GUI")
+        gui.update_toggles_color("green")
+        if not wires._running:
+            gui.update_wire_circles(wires._value)
+            
+            
+   
+    if not toggles._running and not wires._running:
+        if wires._value == "11111":
+            # All stages complete, show code entry
+            if not hasattr(gui, 'code_entry_shown'):
+                gui.show_code_entry()
+                gui.code_entry_shown = True
+            
+            # Handle keypad input without blocking
+            if keypad._value:
+                key = keypad._value[0]
+                keypad._value = keypad._value[1:]  # Remove processed key
+                
+                if key.isdigit() and len(gui.current_code) < 4:
+                    gui.current_code += str(key)
+                    gui.code_labels[len(gui.current_code)-1].config(text=str(key))
+                    
+                    if len(gui.current_code) == 4:
+                        if gui.current_code in keypad._decrypted:
+                            for label in gui.code_labels:
+                                label.config(fg="green")
+                                print("add green")
+                                gui.update()  # Force UI update
+                                
+                                
+                            button._defused = True  # Set button to green when code is correct
+                elif key == "*":
+                    gui.current_code = ""
+                    for label in gui.code_labels:
+                        label.config(text="")
+                        gui.update()  # Force UI update
 
+    
+    
     # check again after 100ms
     gui.after(100, check_class)
 
@@ -59,7 +94,6 @@ class Lcd(Frame):
         super().__init__(window, bg="black")
         self.window = window
         self._ltimer = None
-        self._lserial = self.serial_number()
         self._lkeypad = None
         self._lwires = None
         self._lbutton = None
@@ -67,7 +101,7 @@ class Lcd(Frame):
         self._lpause = None
         self._lquit = None
         self.pack(fill=BOTH, expand=True)
-        
+       
         self.show_welcome()
 
 
@@ -83,13 +117,13 @@ class Lcd(Frame):
                                     command=self.show_difficulty_selection,
                                     bg="red", fg="white")
         get_started_button.pack(pady=20)
-    
+   
     def show_difficulty_selection(self):
         for widget in self.winfo_children():
             widget.destroy()
-        
-        
-        
+       
+       
+       
         # Difficulty selection elements
         difficulty_label = Label(self, text="Select Difficulty Level",
                                  font=("Courier New", 24), bg="black", fg="white")
@@ -110,14 +144,16 @@ class Lcd(Frame):
                              command=lambda: self.show_danger_screen("Hard"),
                              bg="red", fg="white")
         hard_button.pack(pady=10)
-    
-    def show_danger_screen(self, difficulty, togglesColor = "gray"):
+   
+    def show_danger_screen(self, difficulty, togglesColor="gray"):
         # Transition to the Danger screen
         for widget in self.winfo_children():
             widget.destroy()
 
         # Set the background color to black
         self.config(bg="black")
+       
+        self.difficulty = difficulty
 
         # Add the "Danger" title
         danger_label = Label(self, text="DANGER", font=("Courier New", 48),
@@ -134,10 +170,15 @@ class Lcd(Frame):
         bottom_section = Frame(self, bg="black")
         bottom_section.pack(fill=X, padx=20)
 
+        # Placeholder for the other sections (trailing and bottom sections for now)
+        Label(middle_section, text="", font=("Courier New", 18), bg="black", fg="white").pack(pady=5)
+        Label(bottom_section, text="", font=("Courier New", 18), bg="black", fg="white").pack(pady=5)
+       
+       
         # Top leading section with four circles representing switch states
         circle_frame = Frame(top_section, bg="black")
         circle_frame.pack(side=LEFT, padx=10)
-        
+       
         # Circle states: gray (off), green (on)
         self.circle_labels = []
         for _ in range(4):
@@ -145,11 +186,25 @@ class Lcd(Frame):
             circle_label.pack(side=LEFT, padx=5)
             self.circle_labels.append(circle_label)
 
-        # Placeholder for the other sections (trailing and bottom sections for now)
-        Label(middle_section, text="", font=("Courier New", 18), bg="black", fg="white").pack(pady=5)
-        Label(bottom_section, text="", font=("Courier New", 18), bg="black", fg="white").pack(pady=5)
+        # Now we want to smoothly update the toggles color
+        self.update_toggles_color(togglesColor)
+       
+           
+        # Add the horizontal separator (a white line)
+        separator = Frame(self, bg="white", height=2, width=500)
+        separator.pack(pady=20)
 
-        # You can adjust difficulty settings here based on the selected difficulty (e.g., countdown)
+        # Add five circles for the wire states
+        wire_frame = Frame(self, bg="black")
+        wire_frame.pack(pady=20)
+
+        self.wire_circle_labels = []
+        for _ in range(5):
+            wire_circle_label = Label(wire_frame, width=4, height=2, bg="gray", relief="solid")
+            wire_circle_label.pack(side=LEFT, padx=5)
+            self.wire_circle_labels.append(wire_circle_label)
+       
+        # Adjust the difficulty and countdown based on the selection
         global COUNTDOWN
         if difficulty == "Easy":
             COUNTDOWN = 300
@@ -157,6 +212,52 @@ class Lcd(Frame):
             COUNTDOWN = 180
         elif difficulty == "Hard":
             COUNTDOWN = 120
+
+
+    def show_code_entry(self):
+        # Create frame for code entry in top right corner
+        code_frame = Frame(self, bg="black")
+        code_frame.place(relx=0.88, rely=0.21, anchor="n")
+        
+        # Create rounded rectangle effect with labels
+        self.code_labels = []
+        for i in range(4):
+            label = Label(code_frame, width=3, height=1, 
+                         relief="ridge", bg="black", fg="white",
+                         font=("Courier New", 18))
+            label.pack(side=LEFT, padx=2)
+            self.code_labels.append(label)
+        
+        # Initialize code tracking
+        self.current_code = ""
+
+
+    def handle_code_input(self, event):
+        if not hasattr(self, 'current_code'):
+            return
+            
+        if event.char.isdigit() and len(self.current_code) < 4:
+            self.current_code += event.char
+            self.code_labels[len(self.current_code)-1].config(text=event.char)
+            
+            # Check if code matches any decrypted value
+            if len(self.current_code) == 4:
+                if self.current_code in keypad._decrypted:
+                    # Turn numbers green
+                    for label in self.code_labels:
+                        label.config(fg="green")
+
+    def update_toggles_color(self, togglesColor):
+        # Update each circle's background color with the specified color
+        for circle in self.circle_labels:
+            circle.config(bg=togglesColor)
+           
+    def update_wire_circles(self, wire_state):
+        # Update each wire circle based on the wire state
+        for idx, state in enumerate(wire_state):
+            color = "green" if state == "1" else "gray"
+            self.wire_circle_labels[idx].config(bg=color)
+       
 
 
     def start_main_interface(self, difficulty):
@@ -187,7 +288,6 @@ class Lcd(Frame):
                 serial_number += chr(random.randint(97, 122))
             elif i == "0":
                 serial_number += str(random.randint(1, 9))
-        return serial_number
 
     # sets up the LCD "GUI"
     def setup(self):
@@ -305,7 +405,7 @@ class Keypad(PhaseThread):
         self._keypad = keypad
         self._encrypted = []
         self._decrypted = [
-                "horizon",
+                "1111",
                 "velvet",
                 "lantern",
                 "orbit",
@@ -321,43 +421,6 @@ class Keypad(PhaseThread):
                 "ripple",
                 "mosaic"
                 ]
-        # encrypts words
-        for i in range(0, len(self._decrypted)):
-            word = ""
-            for j in self._decrypted[i]:
-                shift = int(gui._serial_number[7])
-                ascii_code = (ord(j) - 97 + shift) % 26 + 97
-                word += chr(ascii_code)
-                self._encrypted.append(word)
-        # keypad dictionary
-        self._key_dictionary = {
-            "2" : "a",
-            "22" : "b",
-            "222": "c",
-            "3" : "d",
-            "33" : "e",
-            "333": "f",
-            "4" : "g",
-            "44" : "h",
-            "444": "i",
-            "5" : "j",
-            "55" : "k",
-            "555": "l",
-            "6" : "m",
-            "66" : "n",
-            "666": "o",
-            "7" : "p",
-            "77" : "q",
-            "777": "r",
-            "7777": "s",
-            "8" : "t",
-            "88" : "u",
-            "888": "v",
-            "9" : "w",
-            "99" : "x",
-            "999": "y",
-            "9999": "z"
-        }
 
     # runs the thread
     def run(self):
@@ -382,7 +445,7 @@ class Keypad(PhaseThread):
             sleep(0.1)
             if self._value == self._decrypted[0]:
                 self._running = False
-                
+               
 #                 print("Keyboard Defused")
 
     def __str__(self):
@@ -413,40 +476,34 @@ class Wires(PhaseThread):
 
 # the pushbutton phase
 class ActionButton(PhaseThread):
-    colors = [ "R", "G", "B" ]  # the button's possible colors
-
     def __init__(self, state, rgb, name="Button"):
         super().__init__(name)
         self._value = False
-        # the pushbutton's state pin
         self._state = state
-        # the pushbutton's LED pins
         self._rgb = rgb
+        self._defused = False  # New flag to track if code is correct
 
-    # runs the thread
     def run(self):
         self._running = True
-        # initialize and index and counter to help iterate through the RGB colors
-        rgb_index = 0
-        rgb_counter = 0
         while (True):
-            # set the LED to the current color
-            self._rgb[0].value = False if ActionButton.colors[rgb_index] == "R" else True
-            self._rgb[1].value = False if ActionButton.colors[rgb_index] == "G" else True
-            self._rgb[2].value = False if ActionButton.colors[rgb_index] == "B" else True
-            # get the pushbutton's state
+            # Set LED color based on defused state
+            if self._defused:
+                # Green when code is correct
+                self._rgb[0].value = True  # R off
+                self._rgb[1].value = False # G on
+                self._rgb[2].value = True  # B off
+            else:
+                # Red by default
+                self._rgb[0].value = False # R on
+                self._rgb[1].value = True  # G off
+                self._rgb[2].value = True  # B off
+                
             self._value = self._state.value
-            # increment the RGB counter
-            rgb_counter += 1
-            # switch to the next RGB color every 1s (10 * 0.1s = 1s)
-            if (rgb_counter == 10):
-                rgb_index = (rgb_index + 1) % len(ActionButton.colors)
-                rgb_counter = 0
             sleep(0.1)
         self._running = False
 
-    def __str__(self):
-        return "Pressed" if self._value else "Released"
+    def set_defused(self, defused):
+        self._defused = defused
 
 # the toggle switches phase
 class Toggles(PhaseThread):
@@ -467,7 +524,7 @@ class Toggles(PhaseThread):
             sleep(0.1)
             # Checks if the toggles are correctly flipped
             self._running = not (self._value == "1101")
-                
+               
 #                 print("Toggles Defused", self._running)
 
     def __str__(self):
@@ -563,11 +620,11 @@ def check():
     if (button._running):
         # update the GUI
         gui._lbutton.config(text=f"Button: {button}")
-        
+       
     # check the toggles
     if (toggles._running):
         print("")
-        
+       
     # check again after 100ms
     gui.after(100, check)
 
