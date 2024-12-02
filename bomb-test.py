@@ -85,8 +85,16 @@ def check_class():
 
     
     
+    
+    if (timer._value == 0):
+        print("Tmer 0")
+        gui.show_failure_screen()
+    
+    
+    
     # check again after 100ms
     gui.after(100, check_class)
+
 
 # the LCD display "GUI"
 class Lcd(Frame):
@@ -146,6 +154,21 @@ class Lcd(Frame):
         hard_button.pack(pady=10)
    
     def show_danger_screen(self, difficulty, togglesColor="gray"):
+        
+        # Set time based on difficulty
+        global COUNTDOWN, timer
+        if difficulty == "Easy":
+            COUNTDOWN = 10  # 6 minutes
+        elif difficulty == "Medium": 
+            COUNTDOWN = 240  # 4 minutes
+        elif difficulty == "Hard":
+            COUNTDOWN = 120  # 2 minutes
+        
+        timer = Timer(COUNTDOWN, display)
+        self.setTimer(timer)
+        timer.start()
+        
+        
         # Transition to the Danger screen
         for widget in self.winfo_children():
             widget.destroy()
@@ -203,15 +226,39 @@ class Lcd(Frame):
             wire_circle_label = Label(wire_frame, width=4, height=2, bg="gray", relief="solid")
             wire_circle_label.pack(side=LEFT, padx=5)
             self.wire_circle_labels.append(wire_circle_label)
-       
-        # Adjust the difficulty and countdown based on the selection
-        global COUNTDOWN
-        if difficulty == "Easy":
-            COUNTDOWN = 300
-        elif difficulty == "Medium":
-            COUNTDOWN = 180
-        elif difficulty == "Hard":
-            COUNTDOWN = 120
+    
+    
+    def show_failure_screen(self):
+        # Clear existing widgets
+        for widget in self.winfo_children():
+            widget.destroy()
+            
+        # Make window fullscreen
+        self.window.attributes('-fullscreen', True)
+            
+        # Set red background
+        self.config(bg="red")
+        
+        # Create main container
+        main_frame = Frame(self, bg="red")
+        main_frame.pack(fill=BOTH, expand=True)
+        
+        # Add "YOU FAILED!" text
+        fail_label = Label(main_frame, text="YOU FAILED!", 
+                          font=("Courier New", 72, "bold"),
+                          bg="red", fg="white")
+        fail_label.pack(pady=50)
+        
+        # Create canvas for circles
+        canvas = Canvas(main_frame, bg="red", highlightthickness=0)
+        canvas.pack(fill=BOTH, expand=True)
+        
+        # Add decorative yellow explosion circles
+        for _ in range(20):
+            x = random.randint(0, self.window.winfo_screenwidth())
+            y = random.randint(0, self.window.winfo_screenheight())
+            size = random.randint(30, 100)
+            canvas.create_oval(x, y, x+size, y+size, fill="yellow", outline="yellow")
 
 
     def show_code_entry(self):
@@ -593,7 +640,6 @@ for pin in toggle_pins:
 toggles = Toggles(toggle_pins)
 
 # start the phase threads
-timer.start()
 keypad.start()
 wires.start()
 button.start()
