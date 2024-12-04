@@ -20,6 +20,8 @@ MAX_PASS_LEN = 11
 STAR_CLEARS_PASS = True
 
 TOGGLES_GUI_UPDATED = False
+# generates random code
+BINARY_CODE = format(random.randrange(1,15), "04b")
 
 def check_class():
     togglesUpdated = False
@@ -330,7 +332,7 @@ class Lcd(Frame):
     def serial_number():
         serial_format = "x00xx1xx0" # format for randomly generated serial number
         serial_number = ""
-        code = int(toggles.code(), 2) # Gets the random binary code
+        code = int(binary_code, 2) # Gets the random binary code
 
         for i in serial_format:
             if i == "x":
@@ -482,7 +484,6 @@ class Keypad(PhaseThread):
             "222" : "c",
             
         }
-        self._code = toggles.code()
 
     # runs the thread
     def run(self):
@@ -513,7 +514,7 @@ class Keypad(PhaseThread):
             sleep(0.1)
             # checks if the input 
             if self._value == self._decrypted[0].lower():
-                print(self._decrypted[self._code - 1])
+                print(self._decrypted[BINARY_CODE - 1])
                 self._running = False
                
 #                 print("Keyboard Defused")
@@ -582,11 +583,6 @@ class Toggles(PhaseThread):
         self._value = ""
         # the toggle switch pins
         self._pins = pins
-        # Generates a random code
-        self._code = format(random.randrange(1,15), "04b")
-
-    def code(self):
-        return self._code
 
     # runs the thread
     def run(self):
@@ -596,7 +592,7 @@ class Toggles(PhaseThread):
             self._value = "".join([str(int(pin.value)) for pin in self._pins])
             sleep(0.1)
             # Checks if the toggles are correctly flipped
-            self._running = not (self._value == "1101")
+            self._running = not (self._value == BINARY_CODE)
                
 #                 print("Toggles Defused", self._running)
 
