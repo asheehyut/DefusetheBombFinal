@@ -332,7 +332,7 @@ class Lcd(Frame):
     def serial_number():
         serial_format = "x00xx1xx0" # format for randomly generated serial number
         serial_number = ""
-        code = int(binary_code, 2) # Gets the random binary code
+        code = int(BINARY_CODE, 2) # Gets the random binary code
 
         for i in serial_format:
             if i == "x":
@@ -456,6 +456,7 @@ class Keypad(PhaseThread):
     def __init__(self, keypad, name="Keypad"):
         super().__init__(name)
         self._value = ""
+        self._key = ""
         # the keypad pins
         self._keypad = keypad
         self._encrypted = []
@@ -479,10 +480,8 @@ class Keypad(PhaseThread):
         ]
 
         self._dictionary = {
-            "2" : "a",
-            "22" : "b",
-            "222" : "c",
-            
+            "2" : "a", "22" : "b", "222" : "c",
+            "3" : "a", "33" : "b", "333" : "c",
         }
 
     # runs the thread
@@ -494,24 +493,24 @@ class Keypad(PhaseThread):
                 # debounce
                 while (self._keypad.pressed_keys):
                     try:
-                        next_key = time.time()
-                        if (next_key - first_key) < 2:
-                            pressed += self._keypad.pressed_keys[0]
-                        elif (next_key - first_key) > 2:
-                            key = self._disctionary[pressed]
-                        first_key = time.time()
+                        key = self._keypad.pressed_keys[0]
                     except:
                         key = ""
                     sleep(0.1)
                 # do we have an asterisk (*) (and it resets the passphrase)?
                 if (key == "*" and STAR_CLEARS_PASS):
                     self._value = ""
+                    self._key = ""
                 # we haven't yet reached the max pass length (otherwise, we just ignore the keypress)
                 elif (len(self._value) < MAX_PASS_LEN):
+                    if key == "#":
+                        self._value += self._dictionary[str(key)]
+                        self._key = ""
+                        pass
                     # log the key
-                    self._value += str(key)
+                    self._key += str(key)
+                    
                 print(self._value)
-                print(self._keypad.pressed_keys[0])
             sleep(0.1)
             # checks if the input 
             if self._value == self._decrypted[0].lower():
