@@ -504,9 +504,11 @@ class Keypad(PhaseThread):
                     self._key = ""
                 # we haven't yet reached the max pass length (otherwise, we just ignore the keypress)
                 elif (len(self._value) < MAX_PASS_LEN):
+                    print(key)
                     if key == "#":
                         self._value += self._dictionary[key]
                         self._key = ""
+                        key = ""
                         pass
                     # log the key
                     self._key += str(key)
