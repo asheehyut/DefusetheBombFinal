@@ -1,4 +1,5 @@
 import random
+import time
 from tkinter import *
 
 import tkinter
@@ -49,8 +50,8 @@ def check_class():
         gui.update_toggles_color("green")
         if not wires._running:
             gui.update_wire_circles(wires._value)
-            
-            
+        
+
    
     if not toggles._running and not wires._running:
         if wires._value == "11111":
@@ -326,15 +327,20 @@ class Lcd(Frame):
         self.window.after(500, self.window.attributes, '-fullscreen', 'True')
         self.setup()
 
-    def serial_number(self):
-        serial_format = "xx00xxx0"
+    def serial_number():
+        serial_format = "x00xx1xx0" # format for randomly generated serial number
         serial_number = ""
+        code = int(toggles.code(), 2) # Gets the random binary code
 
         for i in serial_format:
             if i == "x":
-                serial_number += chr(random.randint(97, 122))
+                serial_number += chr(random.randint(97, 122)).upper()
             elif i == "0":
                 serial_number += str(random.randint(1, 9))
+            elif i == "1":
+                serial_number += str(code)
+
+        return serial_number
 
     # sets up the LCD "GUI"
     def setup(self):
@@ -452,7 +458,7 @@ class Keypad(PhaseThread):
         self._keypad = keypad
         self._encrypted = []
         self._decrypted = [
-                "1111",
+                "1", # pluto
                 "velvet",
                 "lantern",
                 "orbit",
@@ -468,6 +474,12 @@ class Keypad(PhaseThread):
                 "ripple",
                 "mosaic"
                 ]
+        self._dictionary = {
+            "1" : "a",
+            "11" : "b",
+            "111" : "c"
+        }
+        self._code = toggles.code()
 
     # runs the thread
     def run(self):
@@ -478,7 +490,12 @@ class Keypad(PhaseThread):
                 # debounce
                 while (self._keypad.pressed_keys):
                     try:
-                        key = self._keypad.pressed_keys[0]
+                        next_key = time.time()
+                        if (next_key - first_key) < 2:
+                            pressed += self._keypad.pressed_keys[0]
+                        elif (next_key - first_key) > 2:
+                            key = self._disctionary[pressed]
+                        first_key = time.time()
                     except:
                         key = ""
                     sleep(0.1)
@@ -490,7 +507,9 @@ class Keypad(PhaseThread):
                     # log the key
                     self._value += str(key)
             sleep(0.1)
+            # checks if the input 
             if self._value == self._decrypted[0]:
+                self._decrypted[self._code - 1]
                 self._running = False
                
 #                 print("Keyboard Defused")
@@ -561,6 +580,9 @@ class Toggles(PhaseThread):
         self._pins = pins
         # Generates a random code
         self._code = format(random.randrange(1,15), "04b")
+
+    def code(self):
+        return self._code
 
     # runs the thread
     def run(self):
@@ -686,15 +708,10 @@ def quit():
     window.destroy()
     exit(0)
 
-
-
 # start checking the threads
 check_class()
 
-
 # display the LCD GUI
 window.mainloop()
-
-
 
 print("The bomb has been turned off.")
