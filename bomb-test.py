@@ -15,7 +15,7 @@ from adafruit_matrixkeypad import Matrix_Keypad
 # the bomb's initial countdown timer value (seconds)
 COUNTDOWN = 300
 # the maximum passphrase length
-MAX_PASS_LEN = 11
+MAX_PASS_LEN = 14
 # does the asterisk (*) clear the passphrase?
 STAR_CLEARS_PASS = True
 
@@ -517,14 +517,13 @@ class Keypad(PhaseThread):
                         pass
                     # log the key
                     self._key += str(key)
-                print(self._value)
+                    print(self._value)
             sleep(0.1)
             # checks if the input 
             if self._value == self._decrypted[0].lower():
-                print(self._decrypted[BINARY_CODE - 1])
                 self._running = False
                
-#                 print("Keyboard Defused")
+                print("Keyboard Defused")
 
     def __str__(self):
         return self._value
@@ -547,7 +546,7 @@ class Wires(PhaseThread):
             # checks if the correct wires are unplugged
             if self._value[0] == "0" and self._value[2] == "0":
                 self._running = False
-#                 print("Wires Defused")
+                print("Wires Defused")
 
     def __str__(self):
         return f"{self._value}/{int(self._value, 2)}"
@@ -601,7 +600,7 @@ class Toggles(PhaseThread):
             # Checks if the toggles are correctly flipped
             self._running = not (self._value == BINARY_CODE)
                
-#                 print("Toggles Defused", self._running)
+            print("Toggles Defused", self._running)
 
     def __str__(self):
         return f"{self._value}/{int(self._value, 2)}"
