@@ -511,6 +511,7 @@ class Keypad(PhaseThread):
                     # log the key
                     self._value += str(key)
                 print(self._value)
+                print(self._keypad.pressed_keys[0])
             sleep(0.1)
             # checks if the input 
             if self._value == self._decrypted[0].lower():
