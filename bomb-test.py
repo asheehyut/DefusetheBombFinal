@@ -458,26 +458,29 @@ class Keypad(PhaseThread):
         self._keypad = keypad
         self._encrypted = []
         self._decrypted = [
-                "1", # pluto
-                "velvet",
-                "lantern",
-                "orbit",
-                "whisper",
-                "glacier",
-                "compass",
-                "meadow",
-                "ember",
-                "quartz",
-                "harbor",
-                "summit",
-                "echo",
-                "ripple",
-                "mosaic"
-                ]
+            "Algorithm",
+            "Decryption",
+            "Binary",
+            "Compiler",
+            "System",
+            "Cryptography",
+            "Computing",
+            "Encryption",
+            "Network",
+            "Recursion",
+            "Database",
+            "Virtualization",
+            "Data",
+            "Hashing",
+            "Blockchain",
+            "Cybersecurity"
+        ]
+
         self._dictionary = {
-            "1" : "a",
-            "11" : "b",
-            "111" : "c"
+            "2" : "a",
+            "22" : "b",
+            "222" : "c",
+            
         }
         self._code = toggles.code()
 
@@ -506,10 +509,11 @@ class Keypad(PhaseThread):
                 elif (len(self._value) < MAX_PASS_LEN):
                     # log the key
                     self._value += str(key)
+                print(self._value)
             sleep(0.1)
             # checks if the input 
-            if self._value == self._decrypted[0]:
-                self._decrypted[self._code - 1]
+            if self._value == self._decrypted[0].lower():
+                print(self._decrypted[self._code - 1])
                 self._running = False
                
 #                 print("Keyboard Defused")
