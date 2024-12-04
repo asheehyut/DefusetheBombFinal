@@ -461,7 +461,7 @@ class Keypad(PhaseThread):
         self._keypad = keypad
         self._encrypted = []
         self._decrypted = [
-            "Algorithm",
+            "Data",
             "Decryption",
             "Binary",
             "Compiler",
@@ -473,7 +473,7 @@ class Keypad(PhaseThread):
             "Recursion",
             "Database",
             "Virtualization",
-            "Data",
+            "Algorithm",
             "Hashing",
             "Blockchain",
             "Cybersecurity"
@@ -481,7 +481,13 @@ class Keypad(PhaseThread):
 
         self._dictionary = {
             "2" : "a", "22" : "b", "222" : "c",
-            "3" : "a", "33" : "b", "333" : "c",
+            "3": "d", "33": "e", "333": "f",
+            "4": "g", "44": "h", "444": "i",
+            "5": "j", "55": "k", "555": "l",
+            "6": "m", "66": "n", "666": "o",
+            "7": "p", "77": "r", "777": "s",
+            "8": "t", "88": "u", "888": "v",
+            "9": "w", "99": "x", "999": "y",
         }
 
     # runs the thread
@@ -504,15 +510,13 @@ class Keypad(PhaseThread):
                     self._key = ""
                 # we haven't yet reached the max pass length (otherwise, we just ignore the keypress)
                 elif (len(self._value) < MAX_PASS_LEN):
-                    print(key)
                     if key == "#":
-                        self._value += self._dictionary[key]
+                        self._value += self._dictionary[self._key]
                         self._key = ""
                         key = ""
                         pass
                     # log the key
                     self._key += str(key)
-                    
                 print(self._value)
             sleep(0.1)
             # checks if the input 
