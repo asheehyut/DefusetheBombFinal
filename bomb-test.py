@@ -487,6 +487,7 @@ class Keypad(PhaseThread):
     # runs the thread
     def run(self):
         self._running = True
+        print(BINARY_CODE)
         while (True):
             # process keys when keypad key(s) are pressed
             if (self._keypad.pressed_keys):
@@ -625,7 +626,7 @@ gui.setTimer(timer)
 #         -----------KEYPAD----------
 keypad_cols = [DigitalInOut(i) for i in (board.D10, board.D9, board.D11)]
 keypad_rows = [DigitalInOut(i) for i in (board.D5, board.D6, board.D13, board.D19)]
-keypad_keys = ((1, 2, 3), (4, 5, 6), (7, 8, 9), ("*", 0, "#"))
+keypad_keys = (("1", "2", "3"), ("4", "5", "6"), ("7", "8", "9"), ("*", "0", "#"))
 matrix_keypad = Matrix_Keypad(keypad_rows, keypad_cols, keypad_keys)
 keypad = Keypad(matrix_keypad)
 
