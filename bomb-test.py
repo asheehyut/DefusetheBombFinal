@@ -1,6 +1,7 @@
 import random
 import time
 from tkinter import *
+from tkinter import Toplevel, Entry, messagebox
 
 import tkinter
 from threading import Thread
@@ -59,39 +60,19 @@ def check_class():
         if wires._value == "11111":
             # All stages complete, show code entry
             if not hasattr(gui, 'code_entry_shown'):
-                gui.show_code_entry()
-                gui.code_entry_shown = True
-            
-            # Handle keypad input without blocking
-            if keypad._value:
-                key = keypad._value[0]
-                keypad._value = keypad._value[1:]  # Remove processed key
+                # Handle keypad input without blocking
+    
+                button._defused = True
                 
-                if key.isdigit() and len(gui.current_code) < 4:
-                    gui.current_code += str(key)
-                    gui.code_labels[len(gui.current_code)-1].config(text=str(key))
-                    
-                    if len(gui.current_code) == 4:
-                        if gui.current_code in keypad._decrypted:
-                            for label in gui.code_labels:
-                                label.config(fg="green")
-                                print("add green")
-                                gui.update()  # Force UI update
-                                
-                                
-                            button._defused = True  # Set button to green when code is correct
-                elif key == "*":
-                    gui.current_code = ""
-                    for label in gui.code_labels:
-                        label.config(text="")
-                        gui.update()  # Force UI update
+                if button._code_window and button._code_display:
+                    button.update_code_display()
 
-    
-    
-    
+                
     if (timer._value == 0):
         print("Tmer 0")
         gui.show_failure_screen()
+    
+    
     
     
     
@@ -229,7 +210,17 @@ class Lcd(Frame):
             wire_circle_label = Label(wire_frame, width=4, height=2, bg="gray", relief="solid")
             wire_circle_label.pack(side=LEFT, padx=5)
             self.wire_circle_labels.append(wire_circle_label)
+            
+        serial_frame = Frame(self, bg="black")
+        serial_frame.pack(side=BOTTOM, pady=20)
     
+        serial_label = Label(serial_frame, 
+                            text=f"Serial Number: {self.serial_number()}", 
+                            font=("Courier New", 14),
+                            bg="black", 
+                            fg="white")
+        serial_label.pack()
+            
     
     def show_failure_screen(self):
         # Clear existing widgets
@@ -264,38 +255,6 @@ class Lcd(Frame):
             canvas.create_oval(x, y, x+size, y+size, fill="yellow", outline="yellow")
 
 
-    def show_code_entry(self):
-        # Create frame for code entry in top right corner
-        code_frame = Frame(self, bg="black")
-        code_frame.place(relx=0.88, rely=0.21, anchor="n")
-        
-        # Create rounded rectangle effect with labels
-        self.code_labels = []
-        for i in range(4):
-            label = Label(code_frame, width=3, height=1, 
-                         relief="ridge", bg="black", fg="white",
-                         font=("Courier New", 18))
-            label.pack(side=LEFT, padx=2)
-            self.code_labels.append(label)
-        
-        # Initialize code tracking
-        self.current_code = ""
-
-
-    def handle_code_input(self, event):
-        if not hasattr(self, 'current_code'):
-            return
-            
-        if event.char.isdigit() and len(self.current_code) < 4:
-            self.current_code += event.char
-            self.code_labels[len(self.current_code)-1].config(text=event.char)
-            
-            # Check if code matches any decrypted value
-            if len(self.current_code) == 4:
-                if self.current_code in keypad._decrypted:
-                    # Turn numbers green
-                    for label in self.code_labels:
-                        label.config(fg="green")
 
     def update_toggles_color(self, togglesColor):
         # Update each circle's background color with the specified color
@@ -329,10 +288,10 @@ class Lcd(Frame):
         self.window.after(500, self.window.attributes, '-fullscreen', 'True')
         self.setup()
 
-    def serial_number():
-        serial_format = "x00xx1xx0" # format for randomly generated serial number
+    def serial_number(self):
+        serial_format = "x00xx1xx0"  # format for randomly generated serial number
         serial_number = ""
-        code = int(BINARY_CODE, 2) # Gets the random binary code
+        code = int(BINARY_CODE, 2)  # Gets the random binary code
 
         for i in serial_format:
             if i == "x":
@@ -458,6 +417,7 @@ class Keypad(PhaseThread):
         self._value = ""
         self._key = ""
         # the keypad pins
+        self.pressed_keys = []
         self._keypad = keypad
         self._encrypted = []
         self._decrypted = [
@@ -553,31 +513,89 @@ class Wires(PhaseThread):
 
 # the pushbutton phase
 class ActionButton(PhaseThread):
-    def __init__(self, state, rgb, name="Button"):
+    def __init__(self, state, rgb, keypad, name="Button"):
         super().__init__(name)
         self._value = False
         self._state = state
         self._rgb = rgb
-        self._defused = False  # New flag to track if code is correct
+        self._defused = False
+        self.code_entry_shown = False
+        self._keypad = keypad  # Store keypad reference
+        self._current_code = ""
+        self._code_window = None
 
     def run(self):
         self._running = True
         while (True):
-            # Set LED color based on defused state
             if self._defused:
-                # Green when code is correct
-                self._rgb[0].value = True  # R off
-                self._rgb[1].value = False # G on
-                self._rgb[2].value = True  # B off
+                self._rgb[0].value = True  
+                self._rgb[1].value = False
+                self._rgb[2].value = True  
+                
+                if self._state.value and not self.code_entry_shown:
+                    self.show_code_entry()
+                    self.code_entry_shown = True
+                    
+                # Handle keypad input when code entry is active
+                if self.code_entry_shown and self._code_window:
+                    self.handle_keypad_input()
+                    
             else:
-                # Red by default
-                self._rgb[0].value = False # R on
-                self._rgb[1].value = True  # G off
-                self._rgb[2].value = True  # B off
+                self._rgb[0].value = False
+                self._rgb[1].value = True
+                self._rgb[2].value = True
                 
             self._value = self._state.value
             sleep(0.1)
         self._running = False
+
+    def handle_keypad_input(self):
+        if keypad.pressed_keys:
+            while keypad.pressed_keys:
+                try:
+                    key = keypad.pressed_keys[0]
+                    if key == "*":
+                        self._current_code = ""
+                    elif key == "#":
+                        self.check_code(self._current_code)
+                    elif len(self._current_code) < MAX_PASS_LEN:
+                        self._current_code += str(key)
+                    self.update_code_display()
+                except:
+                    pass
+                sleep(0.1)
+    
+    def show_code_entry(self):
+        self._code_window = Toplevel()
+        self._code_window.title("Code Entry")
+        self._code_window.geometry("500x300")
+        
+        Label(self._code_window, 
+              text="Enter DS (Decryption-Secret) Key:", 
+              font=("Courier New", 14)).pack(pady=20)
+        
+        self._code_display = Label(self._code_window, 
+                                 text="", 
+                                 font=("Courier New", 14))
+        self._code_display.pack(pady=20)
+        
+        instruction_label = Label(self._code_window,
+                                text="Use keypad to enter code\n* to clear, # to submit",
+                                font=("Courier New", 12))
+        instruction_label.pack(pady=10)
+
+    def update_code_display(self):
+        if self._code_display:
+            display_text = "*" * len(self._current_code)
+            self._code_display.config(text=display_text)
+
+    def check_code(self, code):
+        if len(code) == MAX_PASS_LEN:
+            # Add your code validation logic here
+            self._code_window.destroy()
+            self._code_window = None
+        else:
+            messagebox.showerror("Error", f"Code must be {MAX_PASS_LEN} digits")
 
     def set_defused(self, defused):
         self._defused = defused
@@ -634,6 +652,7 @@ keypad_rows = [DigitalInOut(i) for i in (board.D5, board.D6, board.D13, board.D1
 keypad_keys = (("1", "2", "3"), ("4", "5", "6"), ("7", "8", "9"), ("*", "0", "#"))
 matrix_keypad = Matrix_Keypad(keypad_rows, keypad_cols, keypad_keys)
 keypad = Keypad(matrix_keypad)
+keypad.start()
 
 # jumper wires
 # 10 pins: 14, 15, 18, 23, 24, 3V3, 3V3, 3V3, 3V3, 3V3
@@ -654,7 +673,7 @@ button_input.pull = Pull.DOWN
 for pin in button_RGB:
     pin.direction = Direction.OUTPUT
     pin.value = True
-button = ActionButton(button_input, button_RGB)
+button = ActionButton(button_input, button_RGB, keypad)
 # bind the pushbutton to the LCD GUI
 gui.setButton(button)
 
@@ -668,7 +687,6 @@ for pin in toggle_pins:
 toggles = Toggles(toggle_pins)
 
 # start the phase threads
-keypad.start()
 wires.start()
 button.start()
 toggles.start()
