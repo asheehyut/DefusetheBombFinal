@@ -107,6 +107,7 @@ class GUI:
 
         tk.Label(frame, text="Select a Game", font=("Arial", 18)).grid(column=0, row=0)
         tk.Button(frame, text="Back", command=self.mainScreen, width=15).grid(column=0, row=1, padx=10, pady=10)
+        tk.Label(frame, text="Blackjack", font=("Arial", 18)).grid(column=0, row=2)
         # Create a square button
         button = tk.Button(
             frame,
@@ -140,15 +141,15 @@ class GUI:
         label.grid(column=0, row=5, padx=5)
 
         # Score
-        tk.Label(frame, text=f"Score : {self.score}", font=("Arial", 14)).grid(column=0, row=0, pady=10)
+        tk.Label(frame, text=f"Score : {self.score}", font=("Arial", 14)).grid(column=1, row=0, pady=10)
 
         # Display player's hand
-        tk.Label(frame, text="Your Hand", font=("Arial", 18)).grid(column=0, row=1, pady=10)
-        self.display_hand(frame, self.player_hand, 1)
+        tk.Label(frame, text="Your Hand", font=("Arial", 18)).grid(column=0, row=2, pady=10)
+        self.display_hand(frame, self.player_hand, 3)
 
         # Display dealer's hand (hide one card)
-        tk.Label(frame, text="Dealer's Hand", font=("Arial", 18)).grid(column=0, row=2, pady=10)
-        self.display_hand(frame, self.dealer_hand, 3, hide_first=True)
+        tk.Label(frame, text="Dealer's Hand", font=("Arial", 18)).grid(column=0, row=0, pady=10)
+        self.display_hand(frame, self.dealer_hand, 1, hide_first=True)
 
         # Player options
         tk.Button(frame, text="Hit", command=self.playerHit, width=10).grid(column=0, row=4, pady=10)
@@ -157,10 +158,18 @@ class GUI:
         cards_remain = self.cards_remaining()
         tk.Label(frame, text=f"Cards Remaining: {cards_remain}", font=("Arial", 14)).grid(column=1, row=5, pady=10)
 
+        player_value = self.calculate_hand_value(self.player_hand)
+        tk.Label(frame, text=f"Value: {player_value}", font=("Arial", 14)).grid(column=1, row=2, pady=10)
+
         # stops blackjack
-        if cards_remain < 8:
+        if cards_remain < 45 and self.score <= 300:
             self.clear()
-            # Next screen
+            # Restart screen
+            self.restart()
+        elif self.score >= 300:
+            self.clear()
+            # Next screen : Bomb defusal screen
+
 
     def display_hand(self, frame, hand, row, hide_first=False):
         # Display a hand of cards.
@@ -180,7 +189,7 @@ class GUI:
         # Handle player hitting.
         self.player_hand.append(self.blackjack.deal_card())
         if self.calculate_hand_value(self.player_hand) > 21:
-            self.endGame("You Busted! Dealer Wins!")
+            self.endGame("Dealer Wins! You Busted!")
         else:
             self.blackjackFrame()
 
@@ -211,7 +220,7 @@ class GUI:
         dealer_value = self.calculate_hand_value(self.dealer_hand)
 
         if dealer_value > 21:
-            self.endGame("Dealer Busted! You Win!")
+            self.endGame("You Win! Dealer Busted!")
             self.score += 100
         elif player_value > dealer_value:
             self.endGame("You Win!")
@@ -231,7 +240,12 @@ class GUI:
         self.clear()
         tk.Label(self.window, text=message, font=("Arial", 24)).pack(pady=20)
         tk.Button(self.window, text="Play Again", command=self.startBlackjack).pack(pady=10)
-        tk.Button(self.window, text="Back to Menu", command=self.gameSelector).pack(pady=10)
+
+    def restart(self):
+        # Buttons
+        tk.Label(self.window, text="Dealer wins!\n\nDefeat the dealer to defuse the Bomb!", font=("Arial", 24)).pack(pady=20)
+        tk.Button(self.window, text="Back to Menu", command=self.gameSelector, width=20).pack(pady=20)
+
 
     def clear(self):
         # Clear the window.

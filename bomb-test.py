@@ -600,7 +600,7 @@ class Toggles(PhaseThread):
             # Checks if the toggles are correctly flipped
             self._running = not (self._value == BINARY_CODE)
                
-            print("Toggles Defused", self._running)
+            
 
     def __str__(self):
         return f"{self._value}/{int(self._value, 2)}"
