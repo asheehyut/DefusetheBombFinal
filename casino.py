@@ -6,58 +6,58 @@ from PIL import Image, ImageTk
 class Blackjack:
     def __init__(self):
         self._dictionary = {
-            "2H": {"image": "cards/2_of_hearts.png", "color": "red", "value": 2},
-            "2D": {"image": "cards/2_of_diamonds.png", "color": "red", "value": 2},
-            "2S": {"image": "cards/2_of_spades.png", "color": "black", "value": 2},
-            "2C": {"image": "cards/2_of_clubs.png", "color": "black", "value": 2},
-            "3H": {"image": "cards/3_of_hearts.png", "color": "red", "value": 3},
-            "3D": {"image": "cards/3_of_diamonds.png", "color": "red", "value": 3},
-            "3S": {"image": "cards/3_of_spades.png", "color": "black", "value": 3},
-            "3C": {"image": "cards/3_of_clubs.png", "color": "black", "value": 3},
-            "4H": {"image": "cards/4_of_hearts.png", "color": "red", "value": 4},
-            "4D": {"image": "cards/4_of_diamonds.png", "color": "red", "value": 4},
-            "4S": {"image": "cards/4_of_spades.png", "color": "black", "value": 4},
-            "4C": {"image": "cards/4_of_clubs.png", "color": "black", "value": 4},
-            "5H": {"image": "cards/5_of_hearts.png", "color": "red", "value": 5},
-            "5D": {"image": "cards/5_of_diamonds.png", "color": "red", "value": 5},
-            "5S": {"image": "cards/5_of_spades.png", "color": "black", "value": 5},
-            "5C": {"image": "cards/5_of_clubs.png", "color": "black", "value": 5},
-            "6H": {"image": "cards/6_of_hearts.png", "color": "red", "value": 6},
-            "6D": {"image": "cards/6_of_diamonds.png", "color": "red", "value": 6},
-            "6S": {"image": "cards/6_of_spades.png", "color": "black", "value": 6},
-            "6C": {"image": "cards/6_of_clubs.png", "color": "black", "value": 6},
-            "7H": {"image": "cards/7_of_hearts.png", "color": "red", "value": 7},
-            "7D": {"image": "cards/7_of_diamonds.png", "color": "red", "value": 7},
-            "7S": {"image": "cards/7_of_spades.png", "color": "black", "value": 7},
-            "7C": {"image": "cards/7_of_clubs.png", "color": "black", "value": 7},
-            "8H": {"image": "cards/8_of_hearts.png", "color": "red", "value": 8},
-            "8D": {"image": "cards/8_of_diamonds.png", "color": "red", "value": 8},
-            "8S": {"image": "cards/8_of_spades.png", "color": "black", "value": 8},
-            "8C": {"image": "cards/8_of_clubs.png", "color": "black", "value": 8},
-            "9H": {"image": "cards/9_of_hearts.png", "color": "red", "value": 9},
-            "9D": {"image": "cards/9_of_diamonds.png", "color": "red", "value": 9},
-            "9S": {"image": "cards/9_of_spades.png", "color": "black", "value": 9},
-            "9C": {"image": "cards/9_of_clubs.png", "color": "black", "value": 9},
-            "1H": {"image": "cards/10_of_hearts.png", "color": "red", "value": 10},
-            "1D": {"image": "cards/10_of_diamonds.png", "color": "red", "value": 10},
-            "1S": {"image": "cards/10_of_spades.png", "color": "black", "value": 10},
-            "1C": {"image": "cards/10_of_clubs.png", "color": "black", "value": 10},
-            "JH": {"image": "cards/jack_of_hearts2.png", "color": "red", "value": 10},
-            "JD": {"image": "cards/jack_of_diamonds2.png", "color": "red", "value": 10},
-            "JS": {"image": "cards/jack_of_spades2.png", "color": "black", "value": 10},
-            "JC": {"image": "cards/jack_of_clubs2.png", "color": "black", "value": 10},
-            "QH": {"image": "cards/queen_of_hearts2.png", "color": "red", "value": 10},
-            "QD": {"image": "cards/queen_of_diamonds2.png", "color": "red", "value": 10},
-            "QS": {"image": "cards/queen_of_spades2.png", "color": "black", "value": 10},
-            "QC": {"image": "cards/queen_of_clubs2.png", "color": "black", "value": 10},
-            "KH": {"image": "cards/king_of_hearts2.png", "color": "red", "value": 10},
-            "KD": {"image": "cards/king_of_diamonds2.png", "color": "red", "value": 10},
-            "KS": {"image": "cards/king_of_spades2.png", "color": "black", "value": 10},
-            "KC": {"image": "cards/king_of_clubs2.png", "color": "black", "value": 10},
-            "AH": {"image": "cards/ace_of_hearts.png", "color": "red", "value": 11},
-            "AD": {"image": "cards/ace_of_diamonds.png", "color": "red", "value": 11},
-            "AS": {"image": "cards/ace_of_spades2.png", "color": "black", "value": 11},
-            "AC": {"image": "cards/ace_of_clubs.png", "color": "black", "value": 11}
+            "2H": {"image": "2_of_hearts.png", "color": "red", "value": 2},
+            "2D": {"image": "2_of_diamonds.png", "color": "red", "value": 2},
+            "2S": {"image": "2_of_spades.png", "color": "black", "value": 2},
+            "2C": {"image": "2_of_clubs.png", "color": "black", "value": 2},
+            "3H": {"image": "3_of_hearts.png", "color": "red", "value": 3},
+            "3D": {"image": "3_of_diamonds.png", "color": "red", "value": 3},
+            "3S": {"image": "3_of_spades.png", "color": "black", "value": 3},
+            "3C": {"image": "3_of_clubs.png", "color": "black", "value": 3},
+            "4H": {"image": "4_of_hearts.png", "color": "red", "value": 4},
+            "4D": {"image": "4_of_diamonds.png", "color": "red", "value": 4},
+            "4S": {"image": "4_of_spades.png", "color": "black", "value": 4},
+            "4C": {"image": "4_of_clubs.png", "color": "black", "value": 4},
+            "5H": {"image": "5_of_hearts.png", "color": "red", "value": 5},
+            "5D": {"image": "5_of_diamonds.png", "color": "red", "value": 5},
+            "5S": {"image": "5_of_spades.png", "color": "black", "value": 5},
+            "5C": {"image": "5_of_clubs.png", "color": "black", "value": 5},
+            "6H": {"image": "6_of_hearts.png", "color": "red", "value": 6},
+            "6D": {"image": "6_of_diamonds.png", "color": "red", "value": 6},
+            "6S": {"image": "6_of_spades.png", "color": "black", "value": 6},
+            "6C": {"image": "6_of_clubs.png", "color": "black", "value": 6},
+            "7H": {"image": "7_of_hearts.png", "color": "red", "value": 7},
+            "7D": {"image": "7_of_diamonds.png", "color": "red", "value": 7},
+            "7S": {"image": "7_of_spades.png", "color": "black", "value": 7},
+            "7C": {"image": "7_of_clubs.png", "color": "black", "value": 7},
+            "8H": {"image": "8_of_hearts.png", "color": "red", "value": 8},
+            "8D": {"image": "8_of_diamonds.png", "color": "red", "value": 8},
+            "8S": {"image": "8_of_spades.png", "color": "black", "value": 8},
+            "8C": {"image": "8_of_clubs.png", "color": "black", "value": 8},
+            "9H": {"image": "9_of_hearts.png", "color": "red", "value": 9},
+            "9D": {"image": "9_of_diamonds.png", "color": "red", "value": 9},
+            "9S": {"image": "9_of_spades.png", "color": "black", "value": 9},
+            "9C": {"image": "9_of_clubs.png", "color": "black", "value": 9},
+            "1H": {"image": "10_of_hearts.png", "color": "red", "value": 10},
+            "1D": {"image": "10_of_diamonds.png", "color": "red", "value": 10},
+            "1S": {"image": "10_of_spades.png", "color": "black", "value": 10},
+            "1C": {"image": "10_of_clubs.png", "color": "black", "value": 10},
+            "JH": {"image": "jack_of_hearts2.png", "color": "red", "value": 10},
+            "JD": {"image": "jack_of_diamonds2.png", "color": "red", "value": 10},
+            "JS": {"image": "jack_of_spades2.png", "color": "black", "value": 10},
+            "JC": {"image": "jack_of_clubs2.png", "color": "black", "value": 10},
+            "QH": {"image": "queen_of_hearts2.png", "color": "red", "value": 10},
+            "QD": {"image": "queen_of_diamonds2.png", "color": "red", "value": 10},
+            "QS": {"image": "queen_of_spades2.png", "color": "black", "value": 10},
+            "QC": {"image": "queen_of_clubs2.png", "color": "black", "value": 10},
+            "KH": {"image": "king_of_hearts2.png", "color": "red", "value": 10},
+            "KD": {"image": "king_of_diamonds2.png", "color": "red", "value": 10},
+            "KS": {"image": "king_of_spades2.png", "color": "black", "value": 10},
+            "KC": {"image": "king_of_clubs2.png", "color": "black", "value": 10},
+            "AH": {"image": "ace_of_hearts.png", "color": "red", "value": 11},
+            "AD": {"image": "ace_of_diamonds.png", "color": "red", "value": 11},
+            "AS": {"image": "ace_of_spades2.png", "color": "black", "value": 11},
+            "AC": {"image": "ace_of_clubs.png", "color": "black", "value": 11}
         }
 
         self.deck = list(self._dictionary.keys())
@@ -134,7 +134,7 @@ class GUI:
         self.clear()
         frame = tk.Frame(self.window)
         frame.grid()
-        img = Image.open("cards/back_of_card.png")
+        img = Image.open("back_of_card.png")
         img = img.resize((100, 150))
         photo = ImageTk.PhotoImage(img)
         label = tk.Label(frame, image=photo)
@@ -177,7 +177,7 @@ class GUI:
         for i, card_key in enumerate(hand):
             card = self.blackjack.get_card_info(card_key)
             if hide_first and i == 0:
-                img = Image.open("cards/back_of_card.png")  # Placeholder for hidden card
+                img = Image.open("back_of_card.png")  # Placeholder for hidden card
             else:
                 img = Image.open(card["image"])
             img = img.resize((100, 150))
