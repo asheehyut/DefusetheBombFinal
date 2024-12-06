@@ -63,6 +63,7 @@ class Blackjack:
         }
 
         self.deck = list(self._dictionary.keys())
+        print(self.deck)
         random.shuffle(self.deck)
 
     def deal_card(self):
@@ -165,11 +166,11 @@ class GUI:
         tk.Label(frame, text=f"Value: {player_value}", font=("Arial", 14)).grid(column=1, row=2, pady=10)
 
         # stops blackjack
-        if cards_remain < 8 and self.score < 300:
+        if cards_remain < 8 and self.score < 150:
             self.clear()
             # Restart screen
             self.restart()
-        elif self.score >= 300:
+        elif self.score >= 150:
             self.clear()
             # Next screen : Bomb defusal screen
             self.defuseTheBomb()

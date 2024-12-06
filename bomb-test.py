@@ -9,6 +9,7 @@
 # MARK: - Import all the required libraries
 import random
 import time
+from pygame import mixer
 from tkinter import *
 from tkinter import Toplevel, Entry, messagebox
 import tkinter
@@ -262,6 +263,20 @@ class Lcd(Frame):
             self.wire_circle_labels[idx].config(bg=color)
     
     def show_success_screen(self):
+        
+        
+        # Starting the mixer 
+        mixer.init() 
+
+        # Loading the song 
+        mixer.music.load("Bomb defused..mp3") 
+          
+        # Setting the volume 
+        mixer.music.set_volume(0.7) 
+          
+        # Start playing the song 
+        mixer.music.play() 
+                
         # Clear existing widgets
         for widget in self.winfo_children():
             widget.destroy()
@@ -804,6 +819,7 @@ def quit():
 # start checking the threads
 check_class()
 # ---------------------------
+
 
 
 # display the LCD GUI
