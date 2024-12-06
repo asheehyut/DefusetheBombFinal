@@ -440,8 +440,6 @@ class Timer(PhaseThread):
     def __str__(self):
         return f"{self._min}:{self._sec}"
 
-
-
 #: MARK: - COMPONENT CLASSES
 
 # the keypad phase
@@ -455,24 +453,23 @@ class Keypad(PhaseThread):
         self._timer = timer
         self.pressed_keys = []
         self._keypad = keypad
-        self._encrypted = []
         self._decrypted = [
-            "Data",
-            "Decryption",
-            "Binary",
-            "Compiler",
-            "System",
-            "Cryptography",
-            "Computing",
-            "Encryption",
-            "Network",
-            "Recursion",
-            "Database",
-            "Virtualization",
-            "Algorithm",
-            "Hashing",
-            "Blockchain",
-            "Cybersecurity"
+            "data",
+            "decryption",
+            "binary",
+            "compiler",
+            "system",
+            "cryptography",
+            "computing",
+            "encryption",
+            "network",
+            "recursion",
+            "database",
+            "virtualization",
+            "algorithm",
+            "hashing",
+            "blockchain",
+            "cybersecurity"
         ]
 
         self._dictionary = {
@@ -534,7 +531,7 @@ class Keypad(PhaseThread):
             sleep(0.1)
             
             # checks if the input 
-            if self._value == self._decrypted[int(BINARY_CODE, 2)].lower():
+            if self._value in self._decrypted:
                 self._running = False
                
                 # == DEBUG PRINT ==
