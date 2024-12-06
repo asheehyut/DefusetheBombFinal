@@ -154,7 +154,7 @@ class GUI:
         cards_remain = self.cards_remaining()
         tk.Label(frame, text=f"Cards Remaining: {cards_remain}", font=("Arial", 14)).grid(column=3, row=2, pady=10)
         img = Image.open("back_of_card.png")
-        img = img.resize((100, 150))
+        img = img.resize((75, 125))
         photo = ImageTk.PhotoImage(img)
         label = tk.Label(frame, image=photo)
         label.image = photo
@@ -182,7 +182,7 @@ class GUI:
                 img = Image.open("back_of_card.png")  # Placeholder for hidden card
             else:
                 img = Image.open(card["image"])
-            img = img.resize((100, 150))
+            img = img.resize((75, 125))
             photo = ImageTk.PhotoImage(img)
             label = tk.Label(frame, image=photo)
             label.image = photo
