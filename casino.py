@@ -134,12 +134,6 @@ class GUI:
         self.clear()
         frame = tk.Frame(self.window)
         frame.grid()
-        img = Image.open("back_of_card.png")
-        img = img.resize((100, 150))
-        photo = ImageTk.PhotoImage(img)
-        label = tk.Label(frame, image=photo)
-        label.image = photo
-        label.grid(column=0, row=5, padx=5)
 
         # Score
         tk.Label(frame, text=f"Score : {self.score}", font=("Arial", 14)).grid(column=1, row=0, pady=10)
@@ -156,9 +150,17 @@ class GUI:
         tk.Button(frame, text="Hit", command=self.playerHit, width=10).grid(column=0, row=4, pady=10)
         tk.Button(frame, text="Stand", command=self.dealerTurn, width=10).grid(column=1, row=4, pady=10)
         
+        # Cards remaining
         cards_remain = self.cards_remaining()
-        tk.Label(frame, text=f"Cards Remaining: {cards_remain}", font=("Arial", 14)).grid(column=1, row=5, pady=10)
+        tk.Label(frame, text=f"Cards Remaining: {cards_remain}", font=("Arial", 14)).grid(column=3, row=2, pady=10)
+        img = Image.open("back_of_card.png")
+        img = img.resize((100, 150))
+        photo = ImageTk.PhotoImage(img)
+        label = tk.Label(frame, image=photo)
+        label.image = photo
+        label.grid(column=2, row=2, padx=5)
 
+        # Players card values
         player_value = self.calculate_hand_value(self.player_hand)
         tk.Label(frame, text=f"Value: {player_value}", font=("Arial", 14)).grid(column=1, row=2, pady=10)
 
