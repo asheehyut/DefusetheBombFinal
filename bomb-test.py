@@ -1,8 +1,16 @@
+####################################################################################
+# Yaroslav Trach, Kevin Wehrle, Aidan Sheehy
+# AMERICAN SPY BOMB DEFUSAL SYSTEM: Casino
+# Professor K
+# Last Modified: 12/06/2024
+####################################################################################
+
+
+# MARK: - Import all the required libraries
 import random
 import time
 from tkinter import *
 from tkinter import Toplevel, Entry, messagebox
-
 import tkinter
 from threading import Thread
 from time import sleep
@@ -12,7 +20,8 @@ from adafruit_ht16k33.segments import Seg7x4
 from digitalio import DigitalInOut, Direction, Pull
 from adafruit_matrixkeypad import Matrix_Keypad
 
-# constants
+
+# MARK: - CONSTANTS
 # the bomb's initial countdown timer value (seconds)
 COUNTDOWN = 300
 # the maximum passphrase length
@@ -24,43 +33,52 @@ TOGGLES_GUI_UPDATED = False
 # generates random code
 BINARY_CODE = format(random.randrange(1,15), "04b")
 
+
+# MARK: - MAIN GLOBAL FUNCTION FOR CONSTANT UI UPDATES
 def check_class():
     togglesUpdated = False
    
-    # Update other UI elements
+    # Check if Toggles Defused
     if not toggles._running:
         gui.update_toggles_color("green")
         if not wires._running:
             gui.update_wire_circles(wires._value)
         
 
-   
+    # Check if Toggles and Wires Defused
     if not toggles._running and not wires._running:
+        
+        # Check if all Toggles green
         if wires._value == "11111":
-            # All stages complete, show code entry
+            
             if not hasattr(gui, 'code_entry_shown'):
-                # Handle keypad input without blocking
-    
+                
+                # Mark Button as activated (green)
                 button._defused = True
                 
                 if button._code_window and button._code_display:
                     button.update_code_display()
 
+    # Show failure screen if time is up
     if (timer._value == 0):
         print("Tmer 0")
         gui.show_failure_screen()
-    
-    
-    
-    
     
     
     # check again after 100ms
     gui.after(100, check_class)
 
 
+
+
+
+
+# MARK: - MAIN CLASSES
+
 # the LCD display "GUI"
 class Lcd(Frame):
+    
+    # MARK: INITIALIZATION
     def __init__(self, window):
         super().__init__(window, bg="black")
         self.window = window
@@ -75,7 +93,7 @@ class Lcd(Frame):
        
         self.show_welcome()
 
-
+    # MARK: MAIN FUNCTIONS
     def show_welcome(self):
         self.window.after(500, self.window.attributes, '-fullscreen', 'True')
         for widget in self.winfo_children():
@@ -92,8 +110,6 @@ class Lcd(Frame):
     def show_difficulty_selection(self):
         for widget in self.winfo_children():
             widget.destroy()
-       
-       
        
         # Difficulty selection elements
         difficulty_label = Label(self, text="Select Difficulty Level",
@@ -156,7 +172,7 @@ class Lcd(Frame):
         bottom_section = Frame(self, bg="black")
         bottom_section.pack(fill=X, padx=20)
 
-        # Placeholder for the other sections (trailing and bottom sections for now)
+
         Label(middle_section, text="", font=("Courier New", 18), bg="black", fg="white").pack(pady=5)
         Label(bottom_section, text="", font=("Courier New", 18), bg="black", fg="white").pack(pady=5)
        
@@ -171,8 +187,9 @@ class Lcd(Frame):
             circle_label = Label(circle_frame, width=4, height=2, bg=togglesColor, relief="solid")
             circle_label.pack(side=LEFT, padx=5)
             self.circle_labels.append(circle_label)
-
-        # Now we want to smoothly update the toggles color
+            
+            
+        
         self.update_toggles_color(togglesColor)
        
            
@@ -200,8 +217,8 @@ class Lcd(Frame):
                             fg="white")
         serial_label.pack()
             
-    
     def show_failure_screen(self):
+        
         # Clear existing widgets
         for widget in self.winfo_children():
             widget.destroy()
@@ -232,35 +249,18 @@ class Lcd(Frame):
             y = random.randint(0, self.window.winfo_screenheight())
             size = random.randint(30, 100)
             canvas.create_oval(x, y, x+size, y+size, fill="yellow", outline="yellow")
-
-
-
+    
     def update_toggles_color(self, togglesColor):
         # Update each circle's background color with the specified color
         for circle in self.circle_labels:
             circle.config(bg=togglesColor)
-           
+        
     def update_wire_circles(self, wire_state):
         # Update each wire circle based on the wire state
         for idx, state in enumerate(wire_state):
             color = "green" if state == "1" else "gray"
             self.wire_circle_labels[idx].config(bg=color)
-       
-
-
-    def start_main_interface(self, difficulty):
-        # Here you can adjust settings based on the selected difficulty
-        # For example, adjust the countdown time
-        global COUNTDOWN
-        if difficulty == "Easy":
-            COUNTDOWN = 300
-        elif difficulty == "Medium":
-            COUNTDOWN = 180
-        elif difficulty == "Hard":
-            COUNTDOWN = 120
-
-        self.show_main_interface()
-        
+    
     def show_success_screen(self):
         # Clear existing widgets
         for widget in self.winfo_children():
@@ -286,19 +286,14 @@ class Lcd(Frame):
         message_label = Label(main_frame, text="Have a good day P.K.!", 
                            font=("Courier New", 36),
                            bg="green", fg="white")
-        message_label.pack(pady=30)
-
-    def show_main_interface(self):
-        for widget in self.winfo_children():
-            widget.destroy()
-        self.window.after(500, self.window.attributes, '-fullscreen', 'True')
-        self.setup()
-
+        message_label.pack(pady=30)    
+    
     def serial_number(self):
+        print(BINARY_CODE)
         serial_format = "x00xx1xx0"  # format for randomly generated serial number
         serial_number = ""
         code = int(BINARY_CODE, 2)  # Gets the random binary code
-
+        print(code)
         for i in serial_format:
             if i == "x":
                 serial_number += chr(random.randint(97, 122)).upper()
@@ -308,8 +303,26 @@ class Lcd(Frame):
                 serial_number += str(code)
 
         return serial_number
+    
+    
+    # MARK: ---- LEGACY CODE: sets up the LCD "GUI" ----
+    def start_main_interface(self, difficulty):
+        global COUNTDOWN
+        if difficulty == "Easy":
+            COUNTDOWN = 300
+        elif difficulty == "Medium":
+            COUNTDOWN = 180
+        elif difficulty == "Hard":
+            COUNTDOWN = 120
 
-    # sets up the LCD "GUI"
+        self.show_main_interface()
+
+    def show_main_interface(self):
+        for widget in self.winfo_children():
+            widget.destroy()
+        self.window.after(500, self.window.attributes, '-fullscreen', 'True')
+        self.setup()
+
     def setup(self):
         # set column weights
         self.columnconfigure(0, weight=1)
@@ -336,6 +349,8 @@ class Lcd(Frame):
         # the quit button
         self._lquit = tkinter.Button(self, bg="red", fg="white", font=("Courier New", 24), text="Quit", command=self.quit)
         self._lquit.grid(row=6, column=1, sticky=W, padx=25, pady=40)
+    # ------------------------------------------------------------------------------------------------------------------------
+
 
     # binds the 7-segment display component to the GUI
     def setTimer(self, timer):
@@ -360,8 +375,11 @@ class Lcd(Frame):
         # close the GUI
         exit(0)
 
-# template (superclass) for various bomb components/phases
+
+# MARK: Template (superclass) for various bomb components/phases
 class PhaseThread(Thread):
+    
+    # MARK: INITIALIZATION
     def __init__(self, name):
         super().__init__(name=name, daemon=True)
         # initially, the phase thread isn't running
@@ -369,10 +387,14 @@ class PhaseThread(Thread):
         # phases can have values (e.g., a pushbutton can be True or False, a keypad passphrase can be some string, etc)
         self._value = None
 
+
+    # MARK: MAIN FUNCTIONS
     # resets the phase's value
     def reset(self):
         self._value = None
 
+
+# MARK: - MAIN TIMER CLASS
 # the timer phase
 class Timer(PhaseThread):
     def __init__(self, value, display, name="Timer"):
@@ -418,8 +440,14 @@ class Timer(PhaseThread):
     def __str__(self):
         return f"{self._min}:{self._sec}"
 
+
+
+#: MARK: - COMPONENT CLASSES
+
 # the keypad phase
 class Keypad(PhaseThread):
+    
+    # MARK: INITIALIZATION
     def __init__(self, keypad, timer, name="Keypad"):
         super().__init__(name)
         self._value = ""
@@ -458,6 +486,8 @@ class Keypad(PhaseThread):
             "9": "w", "99": "x", "999": "y",
         }
 
+
+    # MARK: MAIN FUNCTIONS
     # runs the thread
     def run(self):
         self._running = True
@@ -473,10 +503,11 @@ class Keypad(PhaseThread):
                     except:
                         key = "2"
                     sleep(0.1)
-                # do we have an asterisk (*) (and it resets the passphrase)?
+                    
                 if (key == "*" and STAR_CLEARS_PASS):
                     self._value = ""
                     self._key = ""
+                    
                 # we haven't yet reached the max pass length (otherwise, we just ignore the keypress)
                 elif (len(self._value) < MAX_PASS_LEN):
                     if key == "#":
@@ -485,40 +516,59 @@ class Keypad(PhaseThread):
                         self._key = ""
                         key = ""
                         pass
+                    
                     # log the key
                     self._key += str(key)
-                    print(self._value)
                     
+                    
+                    # == DEBUG PRINT ==
+                    print(self._value)
+                    # =================
+                
+                # == DEBUG PRINT ==
                 print()
                 print("Key:")
                 print(key)
+                # =================
+                
             sleep(0.1)
+            
             # checks if the input 
             if self._value == self._decrypted[0].lower():
                 self._running = False
                
+                # == DEBUG PRINT ==
                 print("Keyboard Defused")
+                # =================
+                
                 
                 gui.show_success_screen()
                 
+                # Stop the main timer
                 timer._running = False
                 timer._value = "00:00"
                 timer.pause()
                 
                 display.brightness = 0
+                
                 break
 
     def __str__(self):
         return self._value
 
+
 # the jumper wires phase
 class Wires(PhaseThread):
+    
+    # MARK: INITIALIZATION
     def __init__(self, pins, name="Wires"):
         super().__init__(name)
         self._value = ""
         # the jumper wire pins
         self._pins = pins
 
+    
+    # MARK: MAIN FUNCTIONS
     # runs the thread
     def run(self):
         self._running = True
@@ -534,8 +584,11 @@ class Wires(PhaseThread):
     def __str__(self):
         return f"{self._value}/{int(self._value, 2)}"
 
+
 # the pushbutton phase
 class ActionButton(PhaseThread):
+    
+    # MARK: INITIALIZATION
     def __init__(self, state, rgb, keypad, name="Button"):
         super().__init__(name)
         self._value = False
@@ -547,6 +600,8 @@ class ActionButton(PhaseThread):
         self._current_code = ""
         self._code_window = None
 
+
+    # MARK: MAIN FUNCTIONS
     def run(self):
         self._running = True
         while (True):
@@ -577,17 +632,12 @@ class ActionButton(PhaseThread):
             while keypad.pressed_keys:
                 try:
                     key = keypad.pressed_keys[0]
-                    if key == "*":
-                        self._current_code = ""
-                    elif key == "#":
-                        self.check_code(self._current_code)
-                    elif len(self._current_code) < MAX_PASS_LEN:
-                        self._current_code += str(key)
                     self.update_code_display()
                 except:
                     pass
                 sleep(0.1)
     
+    # Functions below are for presenting a new window for entering the code from the keypad
     def show_code_entry(self):
         self._code_window = Toplevel()
         self._code_window.title("Code Entry")
@@ -612,25 +662,22 @@ class ActionButton(PhaseThread):
             display_text = self._keypad._value
             self._code_display.config(text=display_text)
 
-    def check_code(self, code):
-        if len(code) == MAX_PASS_LEN:
-            # Add your code validation logic here
-            self._code_window.destroy()
-            self._code_window = None
-        else:
-            messagebox.showerror("Error", f"Code must be {MAX_PASS_LEN} digits")
-
     def set_defused(self, defused):
         self._defused = defused
 
+
 # the toggle switches phase
 class Toggles(PhaseThread):
+    
+    # MARK: INITIALIZATION
     def __init__(self, pins, name="Toggles"):
         super().__init__(name)
         self._value = ""
         # the toggle switch pins
         self._pins = pins
 
+
+    # MARK: MAIN FUNCTIONS
     # runs the thread
     def run(self):
         self._running = True
@@ -641,13 +688,12 @@ class Toggles(PhaseThread):
             # Checks if the toggles are correctly flipped
             self._running = not (self._value == BINARY_CODE)
                
-            
-
+        
     def __str__(self):
         return f"{self._value}/{int(self._value, 2)}"
 
 ######
-# MAIN
+# MARK: - MAIN PROGRAM
 
 # configure and initialize the LCD GUI
 WIDTH = 800
@@ -714,6 +760,8 @@ wires.start()
 button.start()
 toggles.start()
 
+
+# MARK: ---- LEGACY CODE ----
 # check the phase threads
 def check():
     # check the countdown
@@ -742,6 +790,8 @@ def check():
        
     # check again after 100ms
     gui.after(100, check)
+# ---------------------------
+
 
 # quits the bomb
 def quit():
@@ -755,8 +805,12 @@ def quit():
     window.destroy()
     exit(0)
 
+
+# MARK: ---- LEGACY CODE ----
 # start checking the threads
 check_class()
+# ---------------------------
+
 
 # display the LCD GUI
 window.mainloop()
