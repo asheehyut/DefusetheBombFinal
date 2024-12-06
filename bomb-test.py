@@ -653,7 +653,7 @@ class ActionButton(PhaseThread):
         self._code_display.pack(pady=20)
         
         instruction_label = Label(self._code_window,
-                                text="Use keypad to enter code\n* to clear, # to submit",
+                                text="Use keypad to enter code\n* to clear, # to finish letter",
                                 font=("Courier New", 12))
         instruction_label.pack(pady=10)
 
