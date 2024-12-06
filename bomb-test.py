@@ -541,7 +541,6 @@ class Keypad(PhaseThread):
                 print("Keyboard Defused")
                 # =================
                 
-                
                 gui.show_success_screen()
                 
                 # Stop the main timer
@@ -556,7 +555,6 @@ class Keypad(PhaseThread):
     def __str__(self):
         return self._value
 
-
 # the jumper wires phase
 class Wires(PhaseThread):
     
@@ -566,7 +564,6 @@ class Wires(PhaseThread):
         self._value = ""
         # the jumper wire pins
         self._pins = pins
-
     
     # MARK: MAIN FUNCTIONS
     # runs the thread

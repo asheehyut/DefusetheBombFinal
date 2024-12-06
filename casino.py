@@ -63,7 +63,6 @@ class Blackjack:
         }
 
         self.deck = list(self._dictionary.keys())
-        print(self.deck)
         random.shuffle(self.deck)
 
     def deal_card(self):
