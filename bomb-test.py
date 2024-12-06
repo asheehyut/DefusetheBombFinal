@@ -26,27 +26,6 @@ BINARY_CODE = format(random.randrange(1,15), "04b")
 
 def check_class():
     togglesUpdated = False
-#     # check the countdown
-#     if (timer._running):
-#         # update the GUI
-#         gui._ltimer.config(text=f"Time left: {timer}")
-#     else:
-#         # if the countdown has expired, quit
-#         quit()
-#     # check the keypad
-#     if (keypad._running):
-#         # update the GUI
-#         gui._lkeypad.config(text=f"Combination: {keypad}")
-#     # check the wires
-#     if (wires._running):
-#         # update the GUI
-#         gui._lwires.config(text=f"Wires: {wires}")
-#     # check the button
-#     if (button._running):
-#         # update the GUI
-#         gui._lbutton.config(text=f"Button: {button}")
-    # check the toggles
-   
    
     # Update other UI elements
     if not toggles._running:
@@ -67,10 +46,10 @@ def check_class():
                 if button._code_window and button._code_display:
                     button.update_code_display()
 
-                
     if (timer._value == 0):
         print("Tmer 0")
         gui.show_failure_screen()
+    
     
     
     
@@ -281,6 +260,33 @@ class Lcd(Frame):
             COUNTDOWN = 120
 
         self.show_main_interface()
+        
+    def show_success_screen(self):
+        # Clear existing widgets
+        for widget in self.winfo_children():
+            widget.destroy()
+            
+        # Make window fullscreen
+        self.window.attributes('-fullscreen', True)
+            
+        # Set green background
+        self.config(bg="green")
+        
+        # Create main container
+        main_frame = Frame(self, bg="green")
+        main_frame.pack(fill=BOTH, expand=True)
+        
+        # Add "BOMB DEFUSED!" text
+        success_label = Label(main_frame, text="BOMB DEFUSED!", 
+                          font=("Courier New", 72, "bold"),
+                          bg="green", fg="white")
+        success_label.pack(pady=50)
+        
+        # Add message to P.K.
+        message_label = Label(main_frame, text="Have a good day P.K.!", 
+                           font=("Courier New", 36),
+                           bg="green", fg="white")
+        message_label.pack(pady=30)
 
     def show_main_interface(self):
         for widget in self.winfo_children():
@@ -385,7 +391,7 @@ class Timer(PhaseThread):
     # runs the thread
     def run(self):
         self._running = True
-        while (True):
+        while self._running:
             if (not self._paused):
                 # update the timer and display its value on the 7-segment display
                 self.update()
@@ -399,6 +405,7 @@ class Timer(PhaseThread):
                 self._value -= 1
             else:
                 sleep(0.1)
+                print("sleep")
         self._running = False
 
     # pauses and unpauses the timer
@@ -406,17 +413,18 @@ class Timer(PhaseThread):
         self._paused = not self._paused
         # blink the 7-segment display when paused
         self._display.blink_rate = (2 if self._paused else 0)
+        
 
     def __str__(self):
         return f"{self._min}:{self._sec}"
 
 # the keypad phase
 class Keypad(PhaseThread):
-    def __init__(self, keypad, name="Keypad"):
+    def __init__(self, keypad, timer, name="Keypad"):
         super().__init__(name)
         self._value = ""
         self._key = ""
-        # the keypad pins
+        self._timer = timer
         self.pressed_keys = []
         self._keypad = keypad
         self._encrypted = []
@@ -484,6 +492,15 @@ class Keypad(PhaseThread):
                 self._running = False
                
                 print("Keyboard Defused")
+                
+                gui.show_success_screen()
+                
+                timer._running = False
+                timer._value = "00:00"
+                timer.pause()
+                
+                display.brightness = 0
+                break
 
     def __str__(self):
         return self._value
@@ -586,7 +603,7 @@ class ActionButton(PhaseThread):
 
     def update_code_display(self):
         if self._code_display:
-            display_text = "*" * len(self._current_code)
+            display_text = self._keypad._value
             self._code_display.config(text=display_text)
 
     def check_code(self, code):
@@ -651,7 +668,7 @@ keypad_cols = [DigitalInOut(i) for i in (board.D10, board.D9, board.D11)]
 keypad_rows = [DigitalInOut(i) for i in (board.D5, board.D6, board.D13, board.D19)]
 keypad_keys = (("1", "2", "3"), ("4", "5", "6"), ("7", "8", "9"), ("*", "0", "#"))
 matrix_keypad = Matrix_Keypad(keypad_rows, keypad_cols, keypad_keys)
-keypad = Keypad(matrix_keypad)
+keypad = Keypad(matrix_keypad, timer)
 keypad.start()
 
 # jumper wires
