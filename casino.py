@@ -1,6 +1,8 @@
 import random
 import tkinter as tk
 from PIL import Image, ImageTk
+import subprocess
+import sys
 
 # Blackjack Class for Card Data
 class Blackjack:
@@ -102,8 +104,6 @@ class GUI:
         frame = tk.Frame(self.window)
         frame.grid()
 
-        
-
         image = Image.open("blackjack.png").resize((300, 300))  # Replace with your image path
         photo = ImageTk.PhotoImage(image)
 
@@ -172,7 +172,7 @@ class GUI:
         elif self.score >= 300:
             self.clear()
             # Next screen : Bomb defusal screen
-            
+            self.defuseTheBomb()
 
     def display_hand(self, frame, hand, row, hide_first=False):
         # Display a hand of cards.
@@ -238,6 +238,11 @@ class GUI:
     def cards_remaining(self):
         # Returns the number of cards left in the deck
         return len(self.blackjack.deck)
+    
+    def defuseTheBomb(self):
+        # Close the current tkinter application and run the next Python file
+        self.root.destroy()  # Close the tkinter window
+        subprocess.Popen([sys.executable, "bomb-test.py"])  # Replace with the actual file name
 
     def endGame(self, message):
         # End the game and display the result.
