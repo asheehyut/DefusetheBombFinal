@@ -165,7 +165,7 @@ class GUI:
         tk.Label(frame, text=f"Value: {player_value}", font=("Arial", 14)).grid(column=1, row=2, pady=10)
 
         # stops blackjack
-        if cards_remain < 8 and self.score <= 300:
+        if cards_remain < 8 and self.score < 300:
             self.clear()
             # Restart screen
             self.restart()
