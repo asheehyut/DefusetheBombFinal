@@ -463,6 +463,7 @@ class Keypad(PhaseThread):
         self._running = True
         print(BINARY_CODE)
         while (True):
+            
             # process keys when keypad key(s) are pressed
             if (self._keypad.pressed_keys):
                 # debounce
@@ -470,7 +471,7 @@ class Keypad(PhaseThread):
                     try:
                         key = self._keypad.pressed_keys[0]
                     except:
-                        key = ""
+                        key = "2"
                     sleep(0.1)
                 # do we have an asterisk (*) (and it resets the passphrase)?
                 if (key == "*" and STAR_CLEARS_PASS):
@@ -479,13 +480,18 @@ class Keypad(PhaseThread):
                 # we haven't yet reached the max pass length (otherwise, we just ignore the keypress)
                 elif (len(self._value) < MAX_PASS_LEN):
                     if key == "#":
-                        self._value += self._dictionary[self._key]
+                        if str(self._key) in self._dictionary.keys():
+                            self._value += self._dictionary[str(self._key)]
                         self._key = ""
                         key = ""
                         pass
                     # log the key
                     self._key += str(key)
                     print(self._value)
+                    
+                print()
+                print("Key:")
+                print(key)
             sleep(0.1)
             # checks if the input 
             if self._value == self._decrypted[0].lower():
