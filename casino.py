@@ -125,7 +125,6 @@ class GUI:
     def startBlackjack(self):
         # Initialize Blackjack hands and screen
         self.clear()
-        self.blackjack.__init__()
         self.player_hand = [self.blackjack.deal_card(), self.blackjack.deal_card()]
         self.dealer_hand = [self.blackjack.deal_card(), self.blackjack.deal_card()]
 
@@ -167,7 +166,7 @@ class GUI:
         tk.Label(frame, text=f"Value: {player_value}", font=("Arial", 14)).grid(column=1, row=2, pady=10)
 
         # stops blackjack
-        if cards_remain < 48 and self.score <= 300:
+        if cards_remain < 8 and self.score <= 300:
             self.clear()
             # Restart screen
             self.restart()
@@ -243,7 +242,7 @@ class GUI:
     
     def defuseTheBomb(self):
         # Close the current tkinter application and run the next Python file
-        self.root.destroy()  # Close the tkinter window
+        self.window.destroy()  # Close the tkinter window
         subprocess.Popen([sys.executable, "bomb-test.py"])  # Replace with the actual file name
 
     def endGame(self, message):
@@ -253,6 +252,8 @@ class GUI:
         tk.Button(self.window, text="Play Again", command=self.startBlackjack).pack(pady=10)
 
     def restart(self):
+        self.blackjack.__init__()
+        self.score = 0
         # Buttons
         tk.Label(self.window, text="Dealer wins!\n\nDefeat the dealer to defuse the Bomb!", font=("Arial", 24)).pack(pady=20)
         tk.Button(self.window, text="Back to Menu", command=self.gameSelector, width=20).pack(pady=20)
