@@ -6,6 +6,7 @@ from PIL import Image, ImageTk
 class Blackjack:
     def __init__(self):
         self._dictionary = {
+            
             "2H": {"image": "cards/2_of_hearts.png", "color": "red", "value": 2},
             "2D": {"image": "cards/2_of_diamonds.png", "color": "red", "value": 2},
             "2S": {"image": "cards/2_of_spades.png", "color": "black", "value": 2},
@@ -64,11 +65,11 @@ class Blackjack:
         random.shuffle(self.deck)
 
     def deal_card(self):
-        # Deal a single card from the deck.
+        """Deal a single card from the deck."""
         return self.deck.pop() if self.deck else None
 
     def get_card_info(self, key):
-        # Get card details using its key.
+        """Get card details using its key."""
         return self._dictionary[key]
 
 # GUI Class for Display
@@ -80,7 +81,6 @@ class GUI:
         self.blackjack = Blackjack()  # Initialize Blackjack
         self.player_hand = []
         self.dealer_hand = []
-        self.score = 0
         self.mainScreen()
 
     def mainScreen(self):
@@ -102,22 +102,9 @@ class GUI:
         frame = tk.Frame(self.window)
         frame.grid()
 
-        image = Image.open("blackjack.png").resize((300, 300))  # Replace with your image path
-        photo = ImageTk.PhotoImage(image)
-
         tk.Label(frame, text="Select a Game", font=("Arial", 18)).grid(column=0, row=0)
         tk.Button(frame, text="Back", command=self.mainScreen, width=15).grid(column=0, row=1, padx=10, pady=10)
-        # Create a square button
-        button = tk.Button(
-            frame,
-            text=" ",  # Empty text or space to avoid resizing
-            command=self.startBlackjack,
-            image=photo,
-            width=300,  # Set width in pixels (matches image size)
-            height=300  # Set height in pixels (matches image size)
-        )
-        button.image = photo  # Keep a reference to avoid garbage collection
-        button.grid(column=0, row=2, padx=10, pady=10)
+        tk.Button(frame, text="Blackjack", command=self.startBlackjack, width=15).grid(column=0, row=2, padx=10, pady=10)
 
     def startBlackjack(self):
         # Initialize Blackjack hands and screen
@@ -132,18 +119,9 @@ class GUI:
         self.clear()
         frame = tk.Frame(self.window)
         frame.grid()
-        img = Image.open("cards/back_of_card.png")
-        img = img.resize((100, 150))
-        photo = ImageTk.PhotoImage(img)
-        label = tk.Label(frame, image=photo)
-        label.image = photo
-        label.grid(column=0, row=5, padx=5)
-
-        # Score
-        tk.Label(frame, text=f"Score : {self.score}", font=("Arial", 14)).grid(column=0, row=0, pady=10)
 
         # Display player's hand
-        tk.Label(frame, text="Your Hand", font=("Arial", 18)).grid(column=0, row=1, pady=10)
+        tk.Label(frame, text="Your Hand", font=("Arial", 18)).grid(column=0, row=0, pady=10)
         self.display_hand(frame, self.player_hand, 1)
 
         # Display dealer's hand (hide one card)
@@ -155,15 +133,14 @@ class GUI:
         tk.Button(frame, text="Stand", command=self.dealerTurn, width=10).grid(column=1, row=4, pady=10)
         
         cards_remain = self.cards_remaining()
-        tk.Label(frame, text=f"Cards Remaining: {cards_remain}", font=("Arial", 14)).grid(column=1, row=5, pady=10)
+        tk.Label(frame, text=f"Cards Remaining: {cards_remain}", font=("Arial", 14)).grid(column=0, row=5, pady=10)
 
         # stops blackjack
         if cards_remain < 8:
             self.clear()
-            # Next screen
 
     def display_hand(self, frame, hand, row, hide_first=False):
-        # Display a hand of cards.
+        """Display a hand of cards."""
         for i, card_key in enumerate(hand):
             card = self.blackjack.get_card_info(card_key)
             if hide_first and i == 0:
@@ -177,7 +154,7 @@ class GUI:
             label.grid(column=i, row=row, padx=5)
 
     def playerHit(self):
-        # Handle player hitting.
+        """Handle player hitting."""
         self.player_hand.append(self.blackjack.deal_card())
         if self.calculate_hand_value(self.player_hand) > 21:
             self.endGame("You Busted! Dealer Wins!")
@@ -185,13 +162,13 @@ class GUI:
             self.blackjackFrame()
 
     def dealerTurn(self):
-        # Handle dealer's turn.
+        """Handle dealer's turn."""
         while self.calculate_hand_value(self.dealer_hand) < 17:
             self.dealer_hand.append(self.blackjack.deal_card())
         self.determine_winner()
 
     def calculate_hand_value(self, hand):
-        # Calculate the total value of a hand.
+        """Calculate the total value of a hand."""
         value = 0
         aces = 0
         for card_key in hand:
@@ -206,35 +183,32 @@ class GUI:
         return value
 
     def determine_winner(self):
-        # Determine the winner.
+        """Determine the winner."""
         player_value = self.calculate_hand_value(self.player_hand)
         dealer_value = self.calculate_hand_value(self.dealer_hand)
 
         if dealer_value > 21:
             self.endGame("Dealer Busted! You Win!")
-            self.score += 100
         elif player_value > dealer_value:
             self.endGame("You Win!")
-            self.score += 100
         elif player_value < dealer_value:
             self.endGame("Dealer Wins!")
-            self.score -= 50
         else:
             self.endGame("It's a Draw!")
-            self.score += 50
 
     def cards_remaining(self):
         return len(self.blackjack.deck)
 
+
     def endGame(self, message):
-        #End the game and display the result.
+        """End the game and display the result."""
         self.clear()
         tk.Label(self.window, text=message, font=("Arial", 24)).pack(pady=20)
         tk.Button(self.window, text="Play Again", command=self.startBlackjack).pack(pady=10)
         tk.Button(self.window, text="Back to Menu", command=self.gameSelector).pack(pady=10)
 
     def clear(self):
-        # Clear the window.
+        """Clear the window."""
         for widget in self.window.winfo_children():
             widget.destroy()
 
