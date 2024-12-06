@@ -526,7 +526,7 @@ class Keypad(PhaseThread):
                     # =================
                 
                 # == DEBUG PRINT ==
-                print()
+                print(self._decrypted[int(BINARY_CODE, 2)])
                 print("Key:")
                 print(key)
                 # =================
@@ -534,7 +534,7 @@ class Keypad(PhaseThread):
             sleep(0.1)
             
             # checks if the input 
-            if self._value == self._decrypted[0].lower():
+            if self._value == self._decrypted[int(BINARY_CODE, 2)].lower():
                 self._running = False
                
                 # == DEBUG PRINT ==
