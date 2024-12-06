@@ -63,6 +63,7 @@ class Blackjack:
         }
 
         self.deck = list(self._dictionary.keys())
+        print(self.deck)
         random.shuffle(self.deck)
 
     def deal_card(self):
@@ -124,6 +125,7 @@ class GUI:
     def startBlackjack(self):
         # Initialize Blackjack hands and screen
         self.clear()
+        self.blackjack.__init__()
         self.player_hand = [self.blackjack.deal_card(), self.blackjack.deal_card()]
         self.dealer_hand = [self.blackjack.deal_card(), self.blackjack.deal_card()]
 
@@ -165,7 +167,7 @@ class GUI:
         tk.Label(frame, text=f"Value: {player_value}", font=("Arial", 14)).grid(column=1, row=2, pady=10)
 
         # stops blackjack
-        if cards_remain < 8 and self.score <= 300:
+        if cards_remain < 48 and self.score <= 300:
             self.clear()
             # Restart screen
             self.restart()
