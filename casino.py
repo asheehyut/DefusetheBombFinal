@@ -78,8 +78,9 @@ class Blackjack:
 class GUI:
     def __init__(self, window):
         self.window = window
+        self.window.config(bg="#0B6E4F")
         self.window.title("Casino")
-        self.window.attributes("-fullscreen", True)
+        self.window.after(500, self.window.attributes, '-fullscreen', 'True')
         self.blackjack = Blackjack()  # Initialize Blackjack
         self.player_hand = []
         self.dealer_hand = []
@@ -90,25 +91,36 @@ class GUI:
         # Clear current screen
         self.clear()
 
-        # Add main screen content
-        frame = tk.Frame(self.window)
-        frame.grid()
+        # Add main screen content (frame full-screen)
+        frame = tk.Frame(self.window, bg="#0B6E4F")
+        frame.grid(row=0, column=0, sticky="nsew")  # Make the frame fill the whole window
 
-        tk.Label(frame, text="Welcome to the Casino!", font=("Arial", 24)).grid(column=0, row=0)
-        tk.Button(frame, text="Game Menu", command=self.gameSelector, width=20).grid(column=0, row=1, padx=20, pady=20)
+        # Configure grid to expand properly
+        self.window.grid_rowconfigure(0, weight=1)  # Make row 0 expandable
+        self.window.grid_columnconfigure(0, weight=1)  # Make column 0 expandable
+
+        # Add a label and button, centered inside the frame
+        tk.Label(frame, text="Welcome to the Gourd Casino!", bg="#0B6E4F", fg="white", font=("Arial", 24)).grid(column=0, row=0, pady=50)
+        
+        # Add the "Game Menu" button
+        tk.Button(frame, text="Game Menu", command=self.gameSelector, width=20).grid(column=0, row=1, pady=20)
+        
+        # Center all content
+        frame.grid_rowconfigure(0, weight=1)  # Center the label vertically
+        frame.grid_columnconfigure(0, weight=1)  # Center content horizontally
 
     def gameSelector(self):
         # Clear current screen
         self.clear()
 
         # Add game selector content
-        frame = tk.Frame(self.window)
+        frame = tk.Frame(self.window, bg="#0B6E4F")
         frame.grid()
 
         image = Image.open("blackjack.png").resize((300, 300))  # Replace with your image path
         photo = ImageTk.PhotoImage(image)
 
-        tk.Label(frame, text="Select a Game", font=("Arial", 18)).grid(column=0, row=0)
+        tk.Label(frame, text="Select a Game", bg="#0B6E4F", fg="white", font=("Arial", 18)).grid(column=0, row=0)
         tk.Button(frame, text="Back", command=self.mainScreen, width=15).grid(column=0, row=1, padx=10, pady=10)
         tk.Label(frame, text="Blackjack", font=("Arial", 18)).grid(column=0, row=2)
         # Create a square button
@@ -133,18 +145,18 @@ class GUI:
     def blackjackFrame(self):
         # Display Blackjack game
         self.clear()
-        frame = tk.Frame(self.window)
+        frame = tk.Frame(self.window, bg="#0B6E4F")
         frame.grid()
 
         # Score
-        tk.Label(frame, text=f"Score : {self.score}", font=("Arial", 14)).grid(column=1, row=0, pady=10)
+        tk.Label(frame, text=f"Score : {self.score}", bg="#0B6E4F", fg="white", font=("Arial", 14)).grid(column=1, row=0, pady=10)
 
         # Display player's hand
-        tk.Label(frame, text="Your Hand", font=("Arial", 18)).grid(column=0, row=2, pady=10)
+        tk.Label(frame, text="Your Hand", bg="#0B6E4F", fg="white", font=("Arial", 18)).grid(column=0, row=2, pady=10)
         self.display_hand(frame, self.player_hand, 3)
 
         # Display dealer's hand (hide one card)
-        tk.Label(frame, text="Dealer's Hand", font=("Arial", 18)).grid(column=0, row=0, pady=10)
+        tk.Label(frame, text="Dealer's Hand", bg="#0B6E4F", fg="white", font=("Arial", 18)).grid(column=0, row=0, pady=10)
         self.display_hand(frame, self.dealer_hand, 1, hide_first=True)
 
         # Player options
@@ -153,7 +165,7 @@ class GUI:
         
         # Cards remaining
         cards_remain = self.cards_remaining()
-        tk.Label(frame, text=f"Cards Remaining: {cards_remain}", font=("Arial", 14)).grid(column=3, row=2, pady=10)
+        tk.Label(frame, text=f"Cards Remaining: {cards_remain}", bg="#0B6E4F", fg="white", font=("Arial", 14)).grid(column=3, row=2, pady=10)
         img = Image.open("back_of_card.png")
         img = img.resize((75, 125))
         photo = ImageTk.PhotoImage(img)
@@ -163,7 +175,7 @@ class GUI:
 
         # Players card values
         player_value = self.calculate_hand_value(self.player_hand)
-        tk.Label(frame, text=f"Value: {player_value}", font=("Arial", 14)).grid(column=1, row=2, pady=10)
+        tk.Label(frame, text=f"Value: {player_value}", bg="#0B6E4F", fg="white", font=("Arial", 14)).grid(column=1, row=2, pady=10)
 
         # stops blackjack
         if cards_remain < 8 and self.score < 150:
